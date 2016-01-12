@@ -3,8 +3,8 @@
 description: |
   Usage:  cwl-runner <this-file-path> XXXX
   Options:
-    --tumor_bam_path       input tumor bam path
-    --normal_bam_path      input normal bam path
+    --tumor_bam_path       tumor bam path
+    --normal_bam_path      normal bam path
     --uuid                 uuid
 requirements:
   - import: node-engine.cwl
@@ -15,7 +15,7 @@ requirements:
 class: CommandLineTool
 
 inputs:
-  - id: "#input_tumor_bam_path"
+  - id: "#tumor_bam_path"
     type: File
     inputBinding:
       prefix: --tumor_bam_path
@@ -26,7 +26,7 @@ inputs:
             return {"path": $self.path.slice(0,-4)+".bai", "class": "File"};
             }
 
-  - id: "#input_normal_bam_path"
+  - id: "#normal_bam_path"
     type: File
     inputBinding:
       prefix: --normal_bam_path
@@ -48,20 +48,20 @@ inputs:
             return {"path": $self.path.slice(0,-3)+".dict", "class": "File"};
             }
 
-  - id: "#fai_path"
+  - id: "#reference_fasta_fai"
     type: File
     inputBinding:
-      prefix: --fai_path
+      prefix: --reference_fasta_fai
 
   - id: "#thread_count"
     type: string
     inputBinding:
       prefix: --thread_count
 
-  - id: "#blocksize"
+  - id: "#Parallel_Block_Size"
     type: string
     inputBinding:
-      prefix: --blocksize
+      prefix: --Parallel_Block_Size
 
   - id: "#uuid"
     type: string
@@ -70,7 +70,7 @@ inputs:
 
 
 outputs:
-  - id: "#output"
+  - id: "#output_list"
     type:
       type: array
       items: File
