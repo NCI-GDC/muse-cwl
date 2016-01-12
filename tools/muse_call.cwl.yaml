@@ -37,10 +37,10 @@ inputs:
             return {"path": $self.path.slice(0,-4)+".bai", "class": "File"};
             }
 
-  - id: "#reference_fasta_path"
+  - id: "#reference_fasta_name"
     type: File
     inputBinding:
-      prefix: --reference_fasta_path
+      prefix: --reference_fasta_name
       secondaryFiles:
         - engine: node-engine.cwl
           script: |
