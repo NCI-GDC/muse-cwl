@@ -1,0 +1,73 @@
+#!/usr/bin/env cwl-runner
+
+description: |
+  Usage:  cwl-runner <this-file-path> XXXX
+  Options:
+    --muse_call_output_path       muse_call_output_path
+    --uuid                        uuid
+requirements:
+  - import: node-engine.cwl
+  - import: envvar-global.cwl
+  - class: DockerRequirement
+    dockerPull: quay.io/ncigdc/muse-tool
+
+class: CommandLineTool
+
+inputs:
+  - id: "#muse_call_output_path"
+    type: File
+    inputBinding:
+      prefix: --muse_call_output_path
+
+  - id: "#dbsnp_known_snp_sites"
+    type: File
+    inputBinding:
+      prefix: --dbsnp_known_snp_sites
+      secondaryFiles:
+        - engine: node-engine.cwl
+          script: |
+            {
+            return {"path": $self.path+".tbi", "class": "File"};
+            }
+
+  - id: "#uuid"
+    type: string
+    inputBinding:
+      prefix: --uuid
+
+
+outputs:
+  - id: "#output_vcf"
+    type: File
+    description: "The MuSE VCF file"
+    outputBinding:
+      glob:
+        engine: node-engine.cwl
+        script: |
+          {
+            return $job['muse_call_output_path'].path.split('/').slice(-1)[0].slice(0,-4)+".vcf";
+          }
+
+  - id: "#output_sqlite"
+    type: File
+    description: "sqlite file"
+    outputBinding:
+      glob:
+        engine: node-engine.cwl
+        script : |
+          {
+          return $job['uuid']+".db"
+          }
+
+  - id: "#log"
+    type: File
+    description: "python log file"
+    outputBinding:
+      glob:
+        engine: node-engine.cwl
+        script: |
+          {
+          return $job['uuid']+"_muse_sump_wxs.log"
+          }
+
+baseCommand: ["/home/ubuntu/.virtualenvs/p3/bin/python","/home/ubuntu/tools/muse-tool/main.py", "--tool_name", "muse_sump_wgs"]
