@@ -1,0 +1,86 @@
+#!/usr/bin/env cwl-runner
+
+class: Workflow
+
+inputs:
+  - id: "#tumor_bam_path"
+    type: File
+  - id: "#normal_bam_path"
+    type: File
+  - id: "#reference_fasta_name"
+    type: File
+  - id: "#reference_fasta_fai"
+    type: File
+  - id: "#dbsnp_known_snp_sites"
+    type: File
+  - id: "#Parallel_Block_Size"
+    type: string
+  - id: "#thread_count"
+    type: string
+  - id: "#uuid"
+    type: string
+
+outputs:
+  - id: "#muse_call_output_list"
+    type: File
+    source: "#muse_call.output_list"
+  - id: "#merge_output_merge_output"
+    type: File
+    source: "#merge_output.merge_output"
+  - id: "#muse_sump_wgs_output_vcf"
+    type: File
+    source: "#muse_sump_wgs.output_vcf"
+
+requirements:
+  - class: ScatterFeatureRequirement
+
+steps:
+  - id: "#muse_call"
+    run: {import: ../../tools/muse_call.cwl.yaml}
+    inputs:
+      - id: "#muse_call.tumor_bam_path"
+        source: "#tumor_bam_path"
+      - id: "#muse_call.normal_bam_path"
+        source: "#normal_bam_path"
+      - id: "#muse_call.reference_fasta_path"
+        source: "#reference_fasta_path"
+      - id: "#muse_call.reference_fasta_fai"
+        source: "#reference_fasta_fai"
+      - id: "#muse_call.thread_count"
+        source: "#thread_count"
+      - id: "#muse_call.Parallel_Block_Size"
+        source: "#Parallel_Block_Size"
+      - id: "#muse_call.uuid"
+        source: "#uuid"
+    outputs:
+      - id: "#muse_call.output_list"
+      - id: "#muse_call.output_sqlite"
+      - id: "#muse_call.log"
+
+  - id: "#merge_output"
+    run: {import: ../../tools/merge_output.cwl.yaml}
+    inputs:
+      - id: "#merge_output.tumor_bam_path"
+        source: "#tumor_bam_path"
+      - id: "#merge_output.muse_call_output_list"
+        source: "#muse_call.output_list"
+      - id: "#merge_output.uuid"
+        source: "#uuid"
+    outputs:
+      - id: "#merge_output.merge_output"
+      - id: "#merge_output.output_sqlite"
+      - id: "#merge_output.log"
+
+  - id: "#muse_sump_wgs"
+    run: {import: ../../tools/muse_sump_wgs.cwl.yaml}
+    inputs:
+      - id: "#muse_sump_wgs.muse_call_output_path"
+        source: "#merge_output.merge_output"
+      - id: "#muse_sump_wgs.dbsnp_known_snp_sites"
+        source: "#dbsnp_known_snp_sites"
+      - id: "#muse_sump_wgs.uuid"
+        source: "#uuid"
+    outputs:
+      - id: "#muse_sump_wgs.output_vcf"
+      - id: "#muse_sump_wgs.output_sqlite"
+      - id: "#muse_sump_wgs.log"
