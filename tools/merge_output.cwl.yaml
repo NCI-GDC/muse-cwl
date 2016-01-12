@@ -14,7 +14,7 @@ requirements:
 class: CommandLineTool
 
 inputs:
-  - id: "#input_tumor_bam_path"
+  - id: "#tumor_bam_path"
     type: File
     inputBinding:
       prefix: --tumor_bam_path
