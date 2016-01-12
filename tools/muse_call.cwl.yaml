@@ -75,7 +75,7 @@ outputs:
       type: array
       items: File
     outputBinding:
-      glob: *.MuSE.txt
+      glob: output.*.MuSE.txt
 
   - id: "#output_sqlite"
     type: File
