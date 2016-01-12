@@ -1,0 +1,87 @@
+#!/usr/bin/env cwl-runner
+
+description: |
+  Usage:  cwl-runner <this-file-path> XXXX
+  Options:
+    --analysis_ready_tumor_bam_path       input tumor bam path
+    --analysis_ready_normal_bam_path      input normal bam path
+    --uuid                                uuid
+requirements:
+  - import: node-engine.cwl
+  - import: envvar-global.cwl
+  - class: DockerRequirement
+    dockerPull: quay.io/ncigdc/muse-tool
+
+class: CommandLineTool
+
+inputs:
+  - id: "#input_tumor_bam_path"
+    type:
+      type: File
+      inputBinding:
+        prefix: --analysis_ready_tumor_bam_path
+        secondaryFiles:
+          - engine: node-engine.cwl
+            script: |
+              {
+              return {"path": $self.path.slice(0,-4)+".bai", "class": "File"};
+              }
+
+  - id: "#input_normal_bam_path"
+    type:
+      type: File
+      inputBinding:
+        prefix: --analysis_ready_normal_bam_path
+        secondaryFiles:
+          - engine: node-engine.cwl
+            script: |
+              {
+              return {"path": $self.path.slice(0,-4)+".bai", "class": "File"};
+              }
+
+  - id: "#reference_fasta_path"
+    type: File
+    inputBinding:
+      prefix: --reference_fasta_path
+
+  - id: "#fai_path"
+    type: File
+    inputBinding:
+      prefix: --fai_path
+
+  - id: "#uuid"
+    type: string
+    inputBinding:
+      prefix: --uuid
+
+
+outputs:
+  - id: "#output"
+    type:
+      type: array
+      items: File
+    outputBinding:
+      glob: *.MuSE.txt
+
+  - id: "#output_sqlite"
+    type: File
+    description: "sqlite file"
+    outputBinding:
+      glob:
+        engine: node-engine.cwl
+        script : |
+          {
+          return $job['uuid']+".db"
+          }
+  - id: "#log"
+    type: File
+    description: "python log file"
+    outputBinding:
+      glob:
+        engine: node-engine.cwl
+        script: |
+          {
+          return $job['uuid']+"_muse.log"
+          }
+
+baseCommand: ["/home/ubuntu/.virtualenvs/p3/bin/python","/home/ubuntu/tools/muse-tool/main.py", "--tool_name", "muse_call"]
