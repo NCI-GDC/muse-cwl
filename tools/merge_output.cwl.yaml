@@ -62,7 +62,7 @@ outputs:
         engine: node-engine.cwl
         script: |
           {
-          return $job['uuid']+"_muse_merge.log"
+          return $job['uuid']+"_merge.log"
           }
 
 baseCommand: ["/home/ubuntu/.virtualenvs/p3/bin/python","/home/ubuntu/tools/muse-tool/main.py", "--tool_name", "merge_output"]

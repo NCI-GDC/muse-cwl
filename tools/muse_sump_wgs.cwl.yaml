@@ -67,7 +67,7 @@ outputs:
         engine: node-engine.cwl
         script: |
           {
-          return $job['uuid']+"_muse_sump_wxs.log"
+          return $job['uuid']+"_sump_wxs.log"
           }
 
 baseCommand: ["/home/ubuntu/.virtualenvs/p3/bin/python","/home/ubuntu/tools/muse-tool/main.py", "--tool_name", "muse_sump_wgs"]

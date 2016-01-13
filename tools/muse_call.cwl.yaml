@@ -96,7 +96,7 @@ outputs:
         engine: node-engine.cwl
         script: |
           {
-          return $job['uuid']+"_muse_call.log"
+          return $job['uuid']+"_call.log"
           }
 
 baseCommand: ["/home/ubuntu/.virtualenvs/p3/bin/python","/home/ubuntu/tools/muse-tool/main.py", "--tool_name", "muse_call"]
