@@ -77,6 +77,17 @@ outputs:
     outputBinding:
       glob: output.*.MuSE.txt
 
+  - id: "#muse_call_output"
+    type: File
+    description: "The MuSE.txt file"
+    outputBinding:
+      glob:
+        engine: node-engine.cwl
+        script: |
+          {
+          return $job['tumor_bam_path'].path.split('/').slice(-1)[0].slice(0,-4)+".MuSE.txt";
+          }
+
   - id: "#output_sqlite"
     type: File
     description: "sqlite file"
