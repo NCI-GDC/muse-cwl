@@ -22,7 +22,8 @@ inputs:
 
 outputs:
   - id: "#muse_call_output_list"
-    type: File
+    type: array
+    items: File
     source: "#muse_call.output_list"
   - id: "#muse_call_merged_output"
     type: File
