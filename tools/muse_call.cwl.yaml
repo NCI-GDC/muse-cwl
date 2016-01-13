@@ -77,7 +77,7 @@ outputs:
     outputBinding:
       glob: output.*.MuSE.txt
 
-  - id: "#muse_call_output"
+  - id: "#merged_output"
     type: File
     description: "The MuSE.txt file"
     outputBinding:
