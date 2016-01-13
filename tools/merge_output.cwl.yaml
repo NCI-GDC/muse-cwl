@@ -25,7 +25,7 @@ inputs:
       items: File
     inputBinding:
       prefix: --muse_call_output_list
-      glob: *.MuSE.txt
+      glob: output.*.MuSE.txt
 
   - id: "#uuid"
     type: string
