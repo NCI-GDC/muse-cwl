@@ -24,9 +24,9 @@ outputs:
   - id: "#muse_call_output_list"
     type: File
     source: "#muse_call.output_list"
-  - id: "#merge_output_merge_output"
+  - id: "#muse_call_merged_output"
     type: File
-    source: "#merge_output.merge_output"
+    source: "#muse_call.merged_output"
   - id: "#muse_sump_wxs_output_vcf"
     type: File
     source: "#muse_sump_wxs.output_vcf"
