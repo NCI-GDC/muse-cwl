@@ -43,7 +43,7 @@ steps:
       - id: "#muse_call.normal_bam_path"
         source: "#normal_bam_path"
       - id: "#muse_call.reference_fasta_name"
-        source: "#reference_fasta_path"
+        source: "#reference_fasta_fai"
       - id: "#muse_call.reference_fasta_fai"
         source: "#reference_fasta_fai"
       - id: "#muse_call.thread_count"
