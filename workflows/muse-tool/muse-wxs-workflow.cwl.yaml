@@ -21,11 +21,6 @@ inputs:
     type: string
 
 outputs:
-  - id: "#muse_call_output_list"
-    type:
-      type: array
-      items: File
-    source: "#muse_call.output_list"
   - id: "#muse_call_merged_output"
     type: File
     source: "#muse_call.merged_output"
@@ -35,6 +30,12 @@ outputs:
   - id: "#merge_sqlite_destination_sqlite"
     type: File
     source: "#merge_all_sqlite.destination_sqlite"
+  - id: "#muse_call_log"
+    type: File
+    source: "#muse_call.log"
+  - id: "#muse_sump_wxs_log"
+    type: File
+    source: "#muse_sump_wxs.log"
 
 requirements:
   - class: ScatterFeatureRequirement
