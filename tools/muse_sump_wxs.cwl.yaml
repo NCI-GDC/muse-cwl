@@ -1,9 +1,10 @@
 #!/usr/bin/env cwl-runner
 
 description: |
-  Usage:  cwl-runner <this-file-path> XXXX
+  Usage:  cwl-runner <this-file-path> --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp --uuid test
   Options:
     --muse_call_output_path       muse_call_output_path
+    --dbsnp_known_snp_sites       dbSNP vcf file that should be bgzip compressed, tabix indexed and based on the same reference genome used in 'MuSE call'
     --uuid                        uuid
 requirements:
   - import: node-engine.cwl

@@ -1,10 +1,14 @@
 #!/usr/bin/env cwl-runner
 
 description: |
-  Usage:  cwl-runner <this-file-path> XXXX
+  Usage:  cwl-runner <this-file-path> --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --uuid uuid
   Options:
     --tumor_bam_path       tumor bam path
     --normal_bam_path      normal bam path
+    --reference_fasta_name reference path
+    --reference_fasta_fai  reference.fai path (pipeline would take this with Parallel_Block_Size to calculate chunks)
+    --Parallel_Block_Size  number(default = 50000000)
+    --thread_count         number(default = 8)
     --uuid                 uuid
 requirements:
   - import: node-engine.cwl
