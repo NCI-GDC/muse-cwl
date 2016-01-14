@@ -32,18 +32,9 @@ outputs:
   - id: "#muse_sump_wxs_output_vcf"
     type: File
     source: "#muse_sump_wxs.output_vcf"
-  - id: "#muse_call_output_sqlite"
+  - id: "#merge_sqlite_destination_sqlite"
     type: File
-    source: "#muse_call.output_sqlite"
-  - id: "#muse_call_log"
-    type: File
-    source: "#muse_call.log"
-  - id: "#muse_sump_wxs_output_sqlite"
-    type: File
-    source: "#muse_sump_wxs.output_sqlite"
-  - id: "#muse_sump_wxs_log"
-    type: File
-    source: "#muse_sump_wxs.log"
+    source: "#merge_all_sqlite.destination_sqlite"
 
 requirements:
   - class: ScatterFeatureRequirement
@@ -85,3 +76,13 @@ steps:
       - id: "#muse_sump_wxs.output_vcf"
       - id: "#muse_sump_wxs.output_sqlite"
       - id: "#muse_sump_wxs.log"
+
+  - id: "#merge_all_sqlite"
+    run: {import: ../../tools/merge_sqlite.cwl.yaml}
+    inputs:
+      - id: "#merge_all_sqlite.source_sqlite"
+        source: ["#muse_call.output_sqlite", "#muse_sump_wxs.output_sqlite"]
+      - id: "#merge_all_sqlite.uuid"
+        source: "#uuid"
+    outputs:
+      - id: "#merge_all_sqlite.destination_sqlite"
