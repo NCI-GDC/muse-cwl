@@ -32,6 +32,14 @@ outputs:
   - id: "#muse_sump_wxs_output_vcf"
     type: File
     source: "#muse_sump_wxs.output_vcf"
+  - id: "#muse_call_output_sqlite"
+    source: "#muse_call.output_sqlite"
+  - id: "#muse_call_log"
+    source: "#muse_call.log"
+  - id: "#muse_sump_wxs_output_sqlite"
+    source: "#muse_sump_wxs.output_sqlite"
+  - id: "#muse_sump_wxs_log"
+    source: "#muse_sump_wxs.log"
 
 requirements:
   - class: ScatterFeatureRequirement
