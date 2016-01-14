@@ -33,12 +33,16 @@ outputs:
     type: File
     source: "#muse_sump_wgs.output_vcf"
   - id: "#muse_call_output_sqlite"
+    type: File
     source: "#muse_call.output_sqlite"
   - id: "#muse_call_log"
+    type: File
     source: "#muse_call.log"
   - id: "#muse_sump_wgs_output_sqlite"
+    type: File
     source: "#muse_sump_wgs.output_sqlite"
   - id: "#muse_sump_wgs_log"
+    type: File
     source: "#muse_sump_wgs.log"
 
 requirements:
