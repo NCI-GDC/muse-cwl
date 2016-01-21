@@ -37,9 +37,6 @@ outputs:
     type: File
     source: "#muse_sump_wxs.log"
 
-requirements:
-  - class: ScatterFeatureRequirement
-
 steps:
   - id: "#muse_call"
     run: {import: ../../tools/muse_call.cwl.yaml}
