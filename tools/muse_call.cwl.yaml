@@ -116,17 +116,6 @@ outputs:
           return $job['tumor_bam_path'].path.split('/').slice(-1)[0].slice(0,-4)+".MuSE.txt";
           }
 
-  - id: "#output_sqlite"
-    type: File
-    description: "sqlite file"
-    outputBinding:
-      glob:
-        engine: node-engine.cwl
-        script : |
-          {
-          return $job['case_id']+".db"
-          }
-
   - id: "#log"
     type: File
     description: "python log file"

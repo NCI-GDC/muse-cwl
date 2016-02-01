@@ -72,17 +72,6 @@ outputs:
             return $job['muse_call_output_path'].path.split('/').slice(-1)[0].slice(0,-4)+".vcf";
           }
 
-  - id: "#output_sqlite"
-    type: File
-    description: "sqlite file"
-    outputBinding:
-      glob:
-        engine: node-engine.cwl
-        script : |
-          {
-          return $job['case_id']+".db"
-          }
-
   - id: "#log"
     type: File
     description: "python log file"

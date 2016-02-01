@@ -10,7 +10,7 @@ description: |
     --tumor_id                    gdc_tumor_id
     --username                    postgres_username
     --password                    postgres_password
-    
+
 requirements:
   - import: node-engine.cwl
   - import: envvar-global.cwl
@@ -71,17 +71,6 @@ outputs:
         script: |
           {
             return $job['muse_call_output_path'].path.split('/').slice(-1)[0].slice(0,-4)+".vcf";
-          }
-
-  - id: "#output_sqlite"
-    type: File
-    description: "sqlite file"
-    outputBinding:
-      glob:
-        engine: node-engine.cwl
-        script : |
-          {
-          return $job['case_id']+".db"
           }
 
   - id: "#log"
