@@ -44,7 +44,7 @@ outputs:
 
 steps:
   - id: "#muse_call"
-    run: {import: ../../tools/muse_call.cwl.yaml}
+    run: {import: ../tools/muse_call.cwl.yaml}
     inputs:
       - id: "#muse_call.tumor_bam_path"
         source: "#tumor_bam_path"
@@ -76,7 +76,7 @@ steps:
       - id: "#muse_call.log"
 
   - id: "#muse_sump_wgs"
-    run: {import: ../../tools/muse_sump_wgs.cwl.yaml}
+    run: {import: ../tools/muse_sump_wgs.cwl.yaml}
     inputs:
       - id: "#muse_sump_wgs.muse_call_output_path"
         source: "#muse_call.merged_output"
