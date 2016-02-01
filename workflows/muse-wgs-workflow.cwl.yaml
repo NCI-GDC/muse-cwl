@@ -72,7 +72,6 @@ steps:
     outputs:
       - id: "#muse_call.output_list"
       - id: "#muse_call.merged_output"
-      - id: "#muse_call.output_sqlite"
       - id: "#muse_call.log"
 
   - id: "#muse_sump_wgs"
@@ -95,5 +94,4 @@ steps:
 
     outputs:
       - id: "#muse_sump_wgs.output_vcf"
-      - id: "#muse_sump_wgs.output_sqlite"
       - id: "#muse_sump_wgs.log"
