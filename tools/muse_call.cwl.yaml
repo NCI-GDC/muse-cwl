@@ -1,7 +1,7 @@
 #!/usr/bin/env cwl-runner
 
 description: |
-  Usage:  cwl-runner <this-file-path> --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --uuid uuid
+  Usage:  cwl-runner <this-file-path> --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --case_id case_id --normal_id gdc_normal_id --tumor_id gdc_tumor_id --username postgres_username --password postgres_password
   Options:
     --tumor_bam_path       tumor bam path
     --normal_bam_path      normal bam path
@@ -9,7 +9,12 @@ description: |
     --reference_fasta_fai  reference.fai path (pipeline would take this with Parallel_Block_Size to calculate chunks)
     --Parallel_Block_Size  number(default = 50000000)
     --thread_count         number(default = 8)
-    --uuid                 uuid
+    --case_id              case_id
+    --normal_id            gdc_normal_id
+    --tumor_id             gdc_tumor_id
+    --username             postgres_username
+    --password             postgres_password
+
 requirements:
   - import: node-engine.cwl
   - import: envvar-global.cwl
@@ -67,11 +72,30 @@ inputs:
     inputBinding:
       prefix: --Parallel_Block_Size
 
-  - id: "#uuid"
+  - id: "#case_id"
     type: string
     inputBinding:
-      prefix: --uuid
+      prefix: --case_id
 
+  - id: "#normal_id"
+    type: string
+    inputBinding:
+      prefix: --normal_id
+
+  - id: "#tumor_id"
+    type: string
+    inputBinding:
+      prefix: --tumor_id
+
+  - id: "#username"
+    type: string
+    inputBinding:
+      prefix: --username
+
+  - id: "#password"
+    type: string
+    inputBinding:
+      prefix: --password
 
 outputs:
   - id: "#output_list"
@@ -100,7 +124,7 @@ outputs:
         engine: node-engine.cwl
         script : |
           {
-          return $job['uuid']+".db"
+          return $job['case_id']+".db"
           }
 
   - id: "#log"
@@ -111,7 +135,7 @@ outputs:
         engine: node-engine.cwl
         script: |
           {
-          return $job['uuid']+"_muse_call.log"
+          return $job['case_id']+"_muse_call.log"
           }
 
 baseCommand: ["/home/ubuntu/.virtualenvs/p3/bin/python","/home/ubuntu/tools/muse-tool/main.py", "--tool_name", "muse_call"]

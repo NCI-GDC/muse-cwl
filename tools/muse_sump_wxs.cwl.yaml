@@ -1,11 +1,16 @@
 #!/usr/bin/env cwl-runner
 
 description: |
-  Usage:  cwl-runner <this-file-path> --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp --uuid test
+  Usage:  cwl-runner <this-file-path> --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp --case_id test --normal_id gdc_normal_id --tumor_id gdc_tumor_id --username postgres_username --password postgres_password
   Options:
     --muse_call_output_path       muse_call_output_path
     --dbsnp_known_snp_sites       dbSNP vcf file that should be bgzip compressed, tabix indexed and based on the same reference genome used in 'MuSE call'
-    --uuid                        uuid
+    --case_id                     case_id
+    --normal_id                   gdc_normal_id
+    --tumor_id                    gdc_tumor_id
+    --username                    postgres_username
+    --password                    postgres_password
+    
 requirements:
   - import: node-engine.cwl
   - import: envvar-global.cwl
@@ -31,11 +36,30 @@ inputs:
             return {"path": $self.path+".tbi", "class": "File"};
             }
 
-  - id: "#uuid"
+  - id: "#case_id"
     type: string
     inputBinding:
-      prefix: --uuid
+      prefix: --case_id
 
+  - id: "#normal_id"
+    type: string
+    inputBinding:
+      prefix: --normal_id
+
+  - id: "#tumor_id"
+    type: string
+    inputBinding:
+      prefix: --tumor_id
+
+  - id: "#username"
+    type: string
+    inputBinding:
+      prefix: --username
+
+  - id: "#password"
+    type: string
+    inputBinding:
+      prefix: --password
 
 outputs:
   - id: "#output_vcf"
@@ -57,7 +81,7 @@ outputs:
         engine: node-engine.cwl
         script : |
           {
-          return $job['uuid']+".db"
+          return $job['case_id']+".db"
           }
 
   - id: "#log"
@@ -68,7 +92,7 @@ outputs:
         engine: node-engine.cwl
         script: |
           {
-          return $job['uuid']+"_muse_sump_wxs.log"
+          return $job['case_id']+"_muse_sump_wxs.log"
           }
 
 baseCommand: ["/home/ubuntu/.virtualenvs/p3/bin/python","/home/ubuntu/tools/muse-tool/main.py", "--tool_name", "muse_sump_wxs"]

@@ -17,7 +17,15 @@ inputs:
     type: string
   - id: "#thread_count"
     type: string
-  - id: "#uuid"
+  - id: "#case_id"
+    type: string
+  - id: "#normal_id"
+    type: string
+  - id: "#tumor_id"
+    type: string
+  - id: "#username"
+    type: string
+  - id: "#password"
     type: string
 
 outputs:
@@ -27,9 +35,6 @@ outputs:
   - id: "#muse_sump_wxs_output_vcf"
     type: File
     source: "#muse_sump_wxs.output_vcf"
-  - id: "#merge_sqlite_destination_sqlite"
-    type: File
-    source: "#merge_all_sqlite.destination_sqlite"
   - id: "#muse_call_log"
     type: File
     source: "#muse_call.log"
@@ -53,8 +58,17 @@ steps:
         source: "#thread_count"
       - id: "#muse_call.Parallel_Block_Size"
         source: "#Parallel_Block_Size"
-      - id: "#muse_call.uuid"
-        source: "#uuid"
+      - id: "#muse_call.case_id"
+        source: "#case_id"
+      - id: "#muse_call.normal_id"
+        source: "#normal_id"
+      - id: "#muse_call.tumor_id"
+        source: "#tumor_id"
+      - id: "#muse_call.username"
+        source: "#username"
+      - id: "#muse_call.password"
+        source: "#password"
+
     outputs:
       - id: "#muse_call.output_list"
       - id: "#muse_call.merged_output"
@@ -68,19 +82,18 @@ steps:
         source: "#muse_call.merged_output"
       - id: "#muse_sump_wxs.dbsnp_known_snp_sites"
         source: "#dbsnp_known_snp_sites"
-      - id: "#muse_sump_wxs.uuid"
-        source: "#uuid"
+      - id: "#muse_sump_wxs.case_id"
+        source: "#case_id"
+      - id: "#muse_sump_wxs.normal_id"
+        source: "#normal_id"
+      - id: "#muse_sump_wxs.tumor_id"
+        source: "#tumor_id"
+      - id: "#muse_sump_wxs.username"
+        source: "#username"
+      - id: "#muse_sump_wxs.password"
+        source: "#password"
+
     outputs:
       - id: "#muse_sump_wxs.output_vcf"
       - id: "#muse_sump_wxs.output_sqlite"
       - id: "#muse_sump_wxs.log"
-
-  - id: "#merge_all_sqlite"
-    run: {import: ../../tools/merge_sqlite.cwl.yaml}
-    inputs:
-      - id: "#merge_all_sqlite.source_sqlite"
-        source: ["#muse_call.output_sqlite", "#muse_sump_wxs.output_sqlite"]
-      - id: "#merge_all_sqlite.uuid"
-        source: "#uuid"
-    outputs:
-      - id: "#merge_all_sqlite.destination_sqlite"
