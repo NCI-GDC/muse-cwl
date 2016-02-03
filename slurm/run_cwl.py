@@ -124,7 +124,7 @@ if __name__ == "__main__":
             "--output", vcf_file
             ]
     shell_cmd = ' '.join(cmd)
-    cwl_exit = pipelineUtil.run_command(shell_cmd, logger)
+    cwl_exit = pipelineUtil.run_command(str(shell_cmd), logger)
 
     #establish connection with database
 
