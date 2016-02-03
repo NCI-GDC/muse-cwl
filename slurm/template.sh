@@ -21,7 +21,7 @@ thread_count="8"
 username="username"
 password="password"
 repository="git@github.com:NCI-GDC/muse-cwl.git"
-cwl="home/ubuntu/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml"
+cwl="/home/ubuntu/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml"
 dir="/home/ubuntu/muse-cwl/"
 
 if [ ! -d $dir ];then
