@@ -102,7 +102,7 @@ if __name__ == "__main__":
     pipelineUtil.download_from_cleversafe(logger, args.normal, inp)
     bam_norm = os.path.join(inp, os.path.basename(args.normal))
 
-    logger.info("geeting tumor bam")
+    logger.info("getting tumor bam")
     pipelineUtil.download_from_cleversafe(logger, args.tumor,  inp)
     bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
 
@@ -123,8 +123,8 @@ if __name__ == "__main__":
             "--password", args.password,
             "--output", vcf_file
             ]
-
-    cwl_exit = pipelineUtil.run_command(cmd, logger)
+    shell_cmd = ' '.join(cmd)
+    cwl_exit = pipelineUtil.run_command(shell_cmd, logger)
 
     #establish connection with database
 
