@@ -154,10 +154,10 @@ if __name__ == "__main__":
 
     ec_2 = pipelineUtil.upload_to_cleversafe(logger, os.path.join(key_location, "%s.muse.cwl.log" %(str(vcf_uuid))), log_file)
 
-    ec_3 = pipelineUtil.upload_to_cleversafe(logger, os.path.join(key_location, "%s.muse_call.log" %(str(vcf_uuid))),
-                                             os.path.join(workdir, "%s.muse_call.log" %args.case_id))
-    ec_4 = pipelineUtil.upload_to_cleversafe(logger, os.path.join(key_location, "%s.muse_sump_wxs.log" %(str(vcf_uuid))),
-                                             os.path.join(workdir, "%s.muse_sump_wxs.log" %args.case_id))
+    ec_3 = pipelineUtil.upload_to_cleversafe(logger, os.path.join(key_location, "%s_muse_call.log" %(str(vcf_uuid))),
+                                             os.path.join(workdir, "%s_muse_call.log" %args.case_id))
+    ec_4 = pipelineUtil.upload_to_cleversafe(logger, os.path.join(key_location, "%s_muse_sump_wxs.log" %(str(vcf_uuid))),
+                                             os.path.join(workdir, "%s_muse_sump_wxs.log" %args.case_id))
 
     if not(ec_1 and ec_2 and ec_3 and ec_4):
 
