@@ -99,11 +99,11 @@ if __name__ == "__main__":
         dbsnp_index = os.path.join(index, os.path.basename(args.snpindex))
 
     logger.info("getting normal bam")
-    pipelineUtil.download_from_cleversafe(logger, os.path.dirname(args.normal), inp)
+    pipelineUtil.download_from_cleversafe(logger, os.path.dirname(args.normal)+'/', inp)
     bam_norm = os.path.join(inp, os.path.basename(args.normal))
 
     logger.info("getting tumor bam")
-    pipelineUtil.download_from_cleversafe(logger, os.path.dirname(args.tumor),  inp)
+    pipelineUtil.download_from_cleversafe(logger, os.path.dirname(args.tumor)+'/',  inp)
     bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
 
     os.chdir(workdir)
