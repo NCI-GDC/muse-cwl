@@ -123,8 +123,8 @@ if __name__ == "__main__":
             "--password", args.password,
             "--output", vcf_file
             ]
-    shell_cmd = ' '.join(cmd)
-    cwl_exit = pipelineUtil.run_command(shell_cmd, logger)
+
+    cwl_exit = pipelineUtil.run_command(cmd, logger)
 
     #establish connection with database
 
