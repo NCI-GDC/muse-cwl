@@ -4,6 +4,7 @@ description: |
   Usage:  cwl-runner <this-file-path> --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp --case_id test --normal_id gdc_normal_id --tumor_id gdc_tumor_id --username postgres_username --password postgres_password
   Options:
     --muse_call_output_path       muse_call_output_path
+    --output_vcf                  muse output vcf
     --dbsnp_known_snp_sites       dbSNP vcf file that should be bgzip compressed, tabix indexed and based on the same reference genome used in 'MuSE call'
     --case_id                     case_id
     --normal_id                   gdc_normal_id
@@ -35,6 +36,11 @@ inputs:
             {
             return {"path": $self.path+".tbi", "class": "File"};
             }
+
+  - id: "#output_vcf"
+    type: string
+    inputBinding:
+        prefix: --output_vcf
 
   - id: "#case_id"
     type: string
@@ -70,7 +76,7 @@ outputs:
         engine: node-engine.cwl
         script: |
           {
-            return $job['muse_call_output_path'].path.split('/').slice(-1)[0].slice(0,-4)+".vcf";
+            return $job['output_vcf']
           }
 
   - id: "#log"

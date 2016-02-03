@@ -7,6 +7,8 @@ inputs:
     type: File
   - id: "#normal_bam_path"
     type: File
+  - id: "#output_vcf"
+    type: string
   - id: "#reference_fasta_name"
     type: File
   - id: "#reference_fasta_fai"
@@ -81,6 +83,8 @@ steps:
         source: "#muse_call.merged_output"
       - id: "#muse_sump_wxs.dbsnp_known_snp_sites"
         source: "#dbsnp_known_snp_sites"
+      - id: "#muse_sump_wxs.output_vcf"
+        source: "#output_vcf"
       - id: "#muse_sump_wxs.case_id"
         source: "#case_id"
       - id: "#muse_sump_wxs.normal_id"
