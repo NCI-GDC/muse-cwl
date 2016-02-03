@@ -5,7 +5,7 @@ import os
 import postgres
 import setupLog
 import logging
-import shutil
+import tempfile
 
 def is_nat(x):
     '''
