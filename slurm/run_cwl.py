@@ -116,15 +116,15 @@ if __name__ == "__main__":
             "--normal_id", args.normal_id,
             "--tumor_id", args.tumor_id,
             "--dbsnp_known_snp_sites", dbsnp,
-            "--Parallel_Block_Size", args.block,
-            "--thread_count", args.thread_count,
+            "--Parallel_Block_Size", str(args.block),
+            "--thread_count", str(args.thread_count),
             "--case_id", args.case_id,
             "--username", args.username,
             "--password", args.password,
             "--output", vcf_file
             ]
     shell_cmd = ' '.join(cmd)
-    cwl_exit = pipelineUtil.run_command(str(shell_cmd), logger)
+    cwl_exit = pipelineUtil.run_command(shell_cmd, logger)
 
     #establish connection with database
 
