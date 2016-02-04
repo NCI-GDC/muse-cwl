@@ -29,7 +29,7 @@ if [ ! -d $dir ];then
     sudo chown ubuntu:ubuntu $dir
 fi
 
-/usr/bin/python /home/ubuntu/muse-cwl/slurm/run_cwl.py \
+/home/ubuntu/.virtualenvs/p2/bin/python /home/ubuntu/muse-cwl/slurm/run_cwl.py \
 --ref $ref \
 --refindex $refindex \
 --refdict $refdict \
