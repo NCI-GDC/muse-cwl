@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --ntasks-per-node=5
 #SBATCH --workdir=/mnt/SCRATCH/
 
 normal="XX_NORMAL_XX"
