@@ -195,9 +195,12 @@ if __name__ == "__main__":
         cwl_failure = True
 
     #rename outputs
-    orglog = os.path.join(workdir, "%s.muse.log" %args.case_id)
-    os.rename(orglog, os.path.join(workdir, "%s.muse.log" %str(vcf_uuid)))
-
+    orglog1 = os.path.join(workdir, "%s.muse.cwl.log" %args.case_id)
+    os.rename(orglog1, os.path.join(workdir, "%s.muse.cwl.log" %str(vcf_uuid)))
+    orglog2 = os.path.join(workdir, "%s.muse_call.log" %args.case_id)
+    os.rename(orglog2, os.path.join(workdir, "%s.muse_call.log" %str(vcf_uuid)))
+    orglog3 = os.path.join(workdir, "%s.muse_sump_wxs.log" %args.case_id)
+    os.rename(orglog3, os.path.join(workdir, "%s.muse_sump_wxs.log" %str(vcf_uuid)))
     #upload results to s3
     snp_location = os.path.join(args.s3dir, str(vcf_uuid))
 
