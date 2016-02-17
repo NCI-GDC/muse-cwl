@@ -7,55 +7,6 @@ import setupLog
 import logging
 import tempfile
 
-def update_postgres(exit, cwl_failure, vcf_upload_location, snp_location, logger):
-    """ update the status of job on postgres """
-
-    loc = 'UNKNOWN'
-    status = 'UNKNOWN'
-
-
-    if sum(exit) == 0:
-
-        loc = vcf_upload_location
-
-        if not(cwl_failure):
-
-            status = 'SUCCESS'
-            logger.info("uploaded all files to object store. The path is: %s" %snp_location)
-
-        else:
-
-            status = 'COMPLETE'
-            logger.info("CWL failed but outputs were generated. The path is: %s" %snp_location)
-
-    else:
-
-        loc = 'Not Applicable'
-
-        if not(cwl_failure):
-
-            status = 'UPLOAD FAILURE'
-            logger.info("Upload of files failed")
-
-        else:
-            status = 'FAILED'
-            logger.info("CWL and upload both failed")
-
-    return(status, loc)
-
-def upload_all_output(localdir, remotedir, logger):
-    """ upload output files to object store """
-
-    all_exit_code = list()
-
-    for filename in os.listdir(localdir):
-        localfilepath = os.path.join(localdir, filename)
-        remotefilepath = os.path.join(remotedir, filename)
-        exit_code = pipelineUtil.upload_to_cleversafe(logger, remotefilepath, localfilepath)
-        all_exit_code.append(exit_code)
-
-    return all_exit_code
-
 def is_nat(x):
     '''
     Checks that a value is a natural number.
@@ -86,7 +37,7 @@ if __name__ == "__main__":
     required.add_argument("--cwl", default=None, help="Path to CWL code")
 
     optional = parser.add_argument_group("Optional input parameters")
-    optional.add_argument("--s3dir", default="s3://muse_variant/", help="path to output files")
+    optional.add_argument("--s3dir", default="s3://bioinformatics_scratch/", help="path to output files")
     optional.add_argument("--basedir", default="/mnt/SCRATCH/", help="Base directory for computations")
 
     args = parser.parse_args()
@@ -95,11 +46,9 @@ if __name__ == "__main__":
         raise Exception("Could not find path to base directory: %s" %args.basedir)
 
     #create directory structure
-    casedir = tempfile.mkdtemp(prefix="muse_%s_" %args.case_id, dir=args.basedir)
-    workdir = tempfile.mkdtemp(prefix="workdir_", dir=casedir)
-    inp = tempfile.mkdtemp(prefix="input_", dir=casedir)
-    index = tempfile.mkdtemp(prefix="index_", dir=casedir)
-
+    workdir = tempfile.mkdtemp(prefix="muse_workdir_", dir=args.basedir)
+    inp = tempfile.mkdtemp(prefix="muse_input_", dir=args.basedir)
+    index = tempfile.mkdtemp(prefix="muse_index_", dir=args.basedir)
 
     #generate a random uuid
     vcf_uuid = uuid.uuid4()
@@ -109,14 +58,7 @@ if __name__ == "__main__":
     log_file = os.path.join(workdir, "%s.muse.cwl.log" %str(vcf_uuid))
     logger = setupLog.setup_logging(logging.INFO, str(vcf_uuid), log_file)
 
-    #logging inputs
-    logger.info("normal_bam_path: %s" %(args.normal))
-    logger.info("tumor_bam_path: %s" %(args.tumor))
-    logger.info("normal_bam_id: %s" %(args.normal_id))
-    logger.info("tumor_bam_id: %s" %(args.tumor_id))
-    logger.info("case_id: %s" %(args.case_id))
-    logger.info("vcf_id: %s" %(str(vcf_uuid)))
-
+    #download bam files
     reference = os.path.join(index, "GRCh38.d1.vd1.fa")
     if not os.path.isfile(reference):
         logger.info("getting reference")
@@ -190,28 +132,33 @@ if __name__ == "__main__":
     engine = postgres.db_connect(DATABASE)
 
 
-    cwl_failure = False
     if cwl_exit:
-        cwl_failure = True
 
-    #rename outputs
-    orglog1 = os.path.join(workdir, "%s.muse.cwl.log" %args.case_id)
-    os.rename(orglog1, os.path.join(workdir, "%s.muse.cwl.log" %str(vcf_uuid)))
-    orglog2 = os.path.join(workdir, "%s.muse_call.log" %args.case_id)
-    os.rename(orglog2, os.path.join(workdir, "%s.muse_call.log" %str(vcf_uuid)))
-    orglog3 = os.path.join(workdir, "%s.muse_sump_wxs.log" %args.case_id)
-    os.rename(orglog3, os.path.join(workdir, "%s.muse_sump_wxs.log" %str(vcf_uuid)))
+        postgres.add_status(engine, args.case_id, str(vcf_uuid), [args.normal_id, args.tumor_id], "FAILED", "unknown")
+
     #upload results to s3
-    snp_location = os.path.join(args.s3dir, str(vcf_uuid))
 
-    vcf_upload_location = os.path.join(snp_location, vcf_file)
+    key_location = os.path.join(args.s3dir, 'muse_results', str(vcf_uuid))
+    vcf_upload_location = os.path.join(key_location, vcf_file)
 
-    exit = upload_all_output(workdir, snp_location, logger)
+    ec_1 = pipelineUtil.upload_to_cleversafe(logger, vcf_upload_location, os.path.join(workdir, vcf_file))
 
-    status, loc = update_postgres(exit, cwl_failure, vcf_upload_location, snp_location, logger)
+    ec_2 = pipelineUtil.upload_to_cleversafe(logger, os.path.join(key_location, "%s.muse.cwl.log" %(str(vcf_uuid))), log_file)
 
-    postgres.add_status(engine, args.case_id, str(vcf_uuid),
-                        [args.normal_id, args.tumor_id], status, loc)
+    ec_3 = pipelineUtil.upload_to_cleversafe(logger, os.path.join(key_location, "%s_muse_call.log" %(str(vcf_uuid))),
+                                             os.path.join(workdir, "%s_muse_call.log" %args.case_id))
+    ec_4 = pipelineUtil.upload_to_cleversafe(logger, os.path.join(key_location, "%s_muse_sump_wxs.log" %(str(vcf_uuid))),
+                                             os.path.join(workdir, "%s_muse_sump_wxs.log" %args.case_id))
+
+    if not(ec_1 and ec_2 and ec_3 and ec_4):
+
+        postgres.add_status(engine, args.case_id, str(vcf_uuid), [args.normal_id, args.tumor_id], "COMPLETED", vcf_upload_location)
+
+    else:
+
+        postgres.add_status(engine, args.case_id, str(vcf_uuid), [args.normal_id, args.tumor_id], "FAILED", key_location)
 
     #remove work and input directories
-    pipelineUtil.remove_dir(casedir)
+    pipelineUtil.remove_dir(index)
+    pipelineUtil.remove_dir(inp)
+    pipelineUtil.remove_dir(workdir)
