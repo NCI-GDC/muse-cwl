@@ -43,7 +43,7 @@ def create_table(engine, tool):
     if tool.__tablename__ not in tables:
         Base.metadata.create_all(engine)
 
-class Status(object):
+class State(object):
     pass
 
 class Files(object):
