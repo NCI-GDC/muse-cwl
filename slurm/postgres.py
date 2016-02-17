@@ -68,7 +68,7 @@ def add_status(engine, case_id, vcf_id, file_ids, status, output_location):
     session.commit()
     session.close()
 
-def get_case(engine):
+def get_case(engine, status_table):
 
     Session = sessionmaker()
     Session.configure(bind=engine)
@@ -76,29 +76,33 @@ def get_case(engine):
 
     meta = MetaData(engine)
 
-    #read the coclean table
-    status = Table('coclean_caseid_gdcid', meta,
-                        Column("case_id", String, primary_key=True),
-                        Column("gdc_id", String, primary_key=True),
-                        autoload=True)
+    #read the status table
+    state = Table(status_table, meta, autoload=True)
 
-    mapper(Status, status)
+    mapper(State, state)
 
-    data = Table('tcga_wxs_tn_table', meta, autoload=True)
+    data = Table('wxs_tn_match_for_vc', meta,
+                 Column("tumor_gdc_id", String, primary_key=True),
+                 Column("normal_gdc_id", String, primary_key=True),
+                 autoload=True)
 
     mapper(Files, data)
     count = 0
     s = dict()
 
     cases = session.query(Files).all()
+
     for row in cases:
 
-        coclean_norm = session.query(Status).filter(Status.gdc_id == row.gdc_harmonized_id.normal).first()
+        completion = session.query(State).filter(State.case_id == row.case_id).first()
 
-        coclean_tumor = session.query(Status).filter(Status.gdc_id == row.gdc_harmonized_id.tumor).first()
+        if completion == None or not(completion.status == 'SUCCESS'):
 
-        if coclean_norm.status == "COMPLETE" and coclean_tumor.status == "COMPLETE":
-            s[count] = [row.case_id, row.gdc_harmonized_id.normal, coclean_normal.output_location, row.gdc_harmonized_id.tumor, coclean_tumor.output_location]
+            s[count] = [row.case_id,
+                        row.normal_gdc_id,
+                        row.normal_s3_url,
+                        row.tumor_gdc_id,
+                        row.tumor_s3_url]
             count += 1
 
     return s
