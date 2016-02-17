@@ -6,7 +6,7 @@ import os
 if __name__ == "__main__":
 
 
-    parser = argparse.ArgumentParser(description="Variant calling using Somatic-Sniper")
+    parser = argparse.ArgumentParser(description="MuSE Variant calling")
 
     required = parser.add_argument_group("Required input parameters")
     required.add_argument("--config", default=None, help="path to config file", required=True)
@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     engine = postgres.db_connect(DATABASE)
 
-    cases = postgres.get_case(engine, 'somaticsniper_status')
+    cases = postgres.get_case(engine, 'muse_status')
 
     for case in cases:
         slurm = open(os.path.join(args.outdir, "muse.%s.%s.sh" %(cases[case][1], cases[case][3])), "w")
