@@ -37,7 +37,7 @@ if __name__ == "__main__":
     required.add_argument("--cwl", default=None, help="Path to CWL code")
 
     optional = parser.add_argument_group("Optional input parameters")
-    optional.add_argument("--s3dir", default="s3://bioinformatics_scratch/", help="path to output files")
+    optional.add_argument("--s3dir", default="s3://muse_variant/", help="path to output files")
     optional.add_argument("--basedir", default="/mnt/SCRATCH/", help="Base directory for computations")
 
     args = parser.parse_args()
