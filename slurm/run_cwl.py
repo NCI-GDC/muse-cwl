@@ -120,7 +120,7 @@ if __name__ == "__main__":
 
     #download
     logger.info("getting refs")
-    pipelineUtil.download_from_cleversafe(logger, args.refdir, index)
+    pipelineUtil.download_from_cleversafe(logger, args.refdir, index, "/home/ubuntu/.s3cfg")
     reference_fasta_name = os.path.join(index,"GRCh38.d1.vd1.fa")
     reference_fasta_fai = os.path.join(index,"GRCh38.d1.vd1.fa.fai")
     dbsnp_known_snp_sites = os.path.join(index,"dbsnp_144.grch38.vcf.bgz")
