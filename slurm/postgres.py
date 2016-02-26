@@ -1,34 +1,47 @@
-from sqlalchemy import create_engine, MetaData, Table
+from sqlalchemy import create_engine
 from sqlalchemy.engine.url import URL
 from sqlalchemy import Column, Integer, String, Float
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, mapper
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy import exc
 from sqlalchemy.dialects.postgresql import ARRAY
 from contextlib import contextmanager
-from sqlalchemy.sql import select
 
 Base = declarative_base()
 
 class ToolTypeMixin(object):
-    """ Gather information about processing status """
+    """ Gather the timing metrics for different datasets """
 
-    id = Column(Integer, primary_key=True)
+    id = Column('0', primary_key=True)
     case_id = Column(String)
+    datetime_now = Column(String)
     vcf_id = Column(String)
     files = Column(ARRAY(String))
-    status = Column(String)
-    location = Column(String)
+    elapsed = Column(String)
+    thread_count = Column(String)
 
     def __repr__(self):
-        return "<ToolTypeMixin(case_id='%s', status='%s' , location='%s'>" %(self.case_id,
-                self.status, self.location)
+        return "<ToolTypeMixin(systime='%d', usertime='%d', elapsed='%s', cpu='%d', max_resident_time='%d'>" %(self.systime,
+                self.usertime, self.elapsed, self.cpu, self.max_resident_time)
 
-class MuSE(ToolTypeMixin, Base):
+class Metrics(ToolTypeMixin, Base):
 
-    __tablename__ = 'muse_status'
+    __tablename__ = 'metrics_table'
 
+@contextmanager
+def session_scope():
+    """ Provide a transactional scope around a series of transactions """
+
+    session = Session()
+    try:
+        yield session
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    finally:
+        session.close()
 
 def db_connect(database):
     """performs database connection"""
@@ -36,134 +49,26 @@ def db_connect(database):
     return create_engine(URL(**database))
 
 def create_table(engine, tool):
-    """ checks if a table  exists and create one if it doesn't """
+    """ checks if a table for metrics exists and create one if it doesn't """
 
     inspector = Inspector.from_engine(engine)
     tables = set(inspector.get_table_names())
+#    print(inspector.get_table_names())
     if tool.__tablename__ not in tables:
         Base.metadata.create_all(engine)
 
-class State(object):
-    pass
 
-class Files(object):
-    pass
-
-def add_status(engine, case_id, vcf_id, file_ids, status, output_location):
+def add_metrics(engine, met):
     """ add provided metrics to database """
 
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
 
-    met = MuSE(case_id = case_id,
-                    vcf_id = vcf_id,
-                    files=file_ids,
-                    status=status,
-                    location=output_location)
-
+    #create table if not present
     create_table(engine, met)
 
     session.add(met)
     session.commit()
+    session.expunge_all()
     session.close()
-
-def get_case(engine, status_table):
-
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-
-    meta = MetaData(engine)
-
-    #read the status table
-    state = Table(status_table, meta, autoload=True)
-
-    mapper(State, state)
-
-    data = Table('wxs_tn_match_for_vc', meta,
-                 Column("tumor_gdc_id", String, primary_key=True),
-                 Column("normal_gdc_id", String, primary_key=True),
-                 autoload=True)
-
-    mapper(Files, data)
-    count = 0
-    s = dict()
-
-    cases = session.query(Files).all()
-
-    for row in cases:
-
-        completion = session.query(State).filter(State.case_id == row.case_id).first()
-
-        if completion == None or not(completion.status == 'SUCCESS'):
-
-            s[count] = [row.case_id,
-                        row.normal_gdc_id,
-                        row.normal_s3_url,
-                        row.tumor_gdc_id,
-                        row.tumor_s3_url]
-            count += 1
-
-    return s
-
-def get_complete_cases(engine):
-    """ Get complete cases from the database """
-
-    Session = sessionmaker()
-    Session.configure(bind=engine)
-    session = Session()
-
-    meta = MetaData(engine)
-
-    #read the coclean table
-    status = Table('coclean_caseid_gdcid', meta,
-                        Column("case_id", String, primary_key=True),
-                        Column("gdc_id", String, primary_key=True),
-                        autoload=True)
-
-    mapper(Status, status)
-
-    #read harmonized files table
-    data = Table('harmonized_files', meta,
-                    Column("case_id", String, primary_key=True),
-                    Column("gdc_id", String, primary_key=True),
-                    Column("docker_tag", String, primary_key=True),
-                    autoload=True)
-    mapper(Files, data)
-
-    #check for complete cases
-    complete_cases = session.query(Status).filter(Status.status == 'COMPLETE').all()
-
-
-    tumor = dict()
-    tumor_file = dict()
-    normal = dict()
-    normal_file = dict()
-
-    for row in complete_cases:
-        data_details = session.query(Files).filter(Files.gdc_id == row.gdc_id).first()
-        sample_type = data_details.sample_type
-        case_id = str(row.case_id)
-        gdc_id = str(row.gdc_id)
-        output_location = str(row.output_location)
-
-        if "tumor" in sample_type.lower():
-            if case_id not in tumor:
-                tumor[case_id] = list()
-                tumor_file[case_id] = list()
-
-            tumor[case_id].append(gdc_id)
-            tumor_file[gdc_id] = output_location
-
-        if "normal" in sample_type.lower():
-            if case_id not in normal:
-                normal[case_id] = list()
-                normal_file[case_id] = list()
-
-            normal[case_id].append(gdc_id)
-            normal_file[gdc_id] = output_location
-
-
-    session.close()
-    return(tumor, tumor_file, normal, normal_file)
