@@ -46,7 +46,7 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
 
     return(status, loc)
 
-def upload_all_output(localdir, remotedir, logger):
+def upload_all_output(localdir, remotedir, logger, config):
     """ upload output files to object store """
 
     all_exit_code = list()
@@ -54,7 +54,7 @@ def upload_all_output(localdir, remotedir, logger):
     for filename in os.listdir(localdir):
         localfilepath = os.path.join(localdir, filename)
         remotefilepath = os.path.join(remotedir, filename)
-        exit_code = pipelineUtil.upload_to_cleversafe(logger, remotefilepath, localfilepath)
+        exit_code = pipelineUtil.upload_to_cleversafe(logger, remotefilepath, localfilepath, config)
         all_exit_code.append(exit_code)
 
     return all_exit_code
@@ -182,7 +182,7 @@ if __name__ == "__main__":
 
     vcf_upload_location = os.path.join(muse_location, vcf_file)
 
-    exit = upload_all_output(workdir, muse_location, logger)
+    exit = upload_all_output(workdir, muse_location, logger, s3cfg_ceph)
 
     cwl_end = time.time()
     cwl_elapsed = cwl_end - cwl_start
