@@ -16,11 +16,6 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
 
     loc = 'UNKNOWN'
     status = 'UNKNOWN'
-    print exit
-    print cwl_failure
-    print vcf_upload_location
-    print muse_location
-    print logger
 
     if sum(exit) == 0:
 
@@ -48,6 +43,8 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
         else:
             status = 'FAILED'
             logger.info("CWL and upload both failed")
+
+    return(status, loc)
 
 def upload_all_output(localdir, remotedir, logger):
     """ upload output files to object store """
@@ -216,9 +213,6 @@ if __name__ == "__main__":
     postgres.add_metrics(engine, met)
 
     status, loc = update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logger)
-
-    print status
-    print loc
 
     status_postgres.add_status(engine, args.case_id, args.normal_id, str(vcf_uuid), [args.normal_id, args.tumor_id], status, loc)
 
