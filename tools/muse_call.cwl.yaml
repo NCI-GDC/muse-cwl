@@ -1,8 +1,7 @@
 #!/usr/bin/env cwl-runner
 
 description: |
-  Usage:  cwl-runner <this-file-path> --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --case_id case_id --normal_id gdc_normal_id --tumor_id gdc_tumor_id --username postgres_username --password postgres_password
-  Options:
+  Usage:  cwl-runner <this-file-path> --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --case_id case_id --normal_id gdc_normal_id --tumor_id gdc_tumor_id --postgres_config postgres_config
     --tumor_bam_path       tumor bam path
     --normal_bam_path      normal bam path
     --reference_fasta_name reference path
@@ -12,8 +11,7 @@ description: |
     --case_id              case_id
     --normal_id            gdc_normal_id
     --tumor_id             gdc_tumor_id
-    --username             postgres_username
-    --password             postgres_password
+    --postgres_config      postgres_config
 
 requirements:
   - import: node-engine.cwl
@@ -87,15 +85,11 @@ inputs:
     inputBinding:
       prefix: --tumor_id
 
-  - id: "#username"
-    type: string
+  - id: "#postgres_config"
+    type: File
     inputBinding:
-      prefix: --username
+      prefix: --postgres_config
 
-  - id: "#password"
-    type: string
-    inputBinding:
-      prefix: --password
 
 outputs:
   - id: "#output_list"

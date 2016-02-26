@@ -1,7 +1,7 @@
 #!/usr/bin/env cwl-runner
 
 description: |
-  Usage:  cwl-runner <this-file-path> --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp --case_id test --normal_id gdc_normal_id --tumor_id gdc_tumor_id --username postgres_username --password postgres_password
+  Usage:  cwl-runner <this-file-path> --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp --case_id test --normal_id gdc_normal_id --tumor_id gdc_tumor_id --postgres_config postgres_config
   Options:
     --muse_call_output_path       muse_call_output_path
     --output_vcf                  muse output vcf
@@ -9,8 +9,7 @@ description: |
     --case_id                     case_id
     --normal_id                   gdc_normal_id
     --tumor_id                    gdc_tumor_id
-    --username                    postgres_username
-    --password                    postgres_password
+    --postgres_config             postgres_config
 
 requirements:
   - import: node-engine.cwl
@@ -57,15 +56,10 @@ inputs:
     inputBinding:
       prefix: --tumor_id
 
-  - id: "#username"
-    type: string
+  - id: "#postgres_config"
+    type: File
     inputBinding:
-      prefix: --username
-
-  - id: "#password"
-    type: string
-    inputBinding:
-      prefix: --password
+      prefix: --postgres_config
 
 outputs:
   - id: "#output_vcf"

@@ -25,10 +25,9 @@ inputs:
     type: string
   - id: "#tumor_id"
     type: string
-  - id: "#username"
-    type: string
-  - id: "#password"
-    type: string
+  - id: "#postgres_config"
+    type: File
+
 
 outputs:
   - id: "#muse_call_merged_output"
@@ -66,10 +65,9 @@ steps:
         source: "#normal_id"
       - id: "#muse_call.tumor_id"
         source: "#tumor_id"
-      - id: "#muse_call.username"
-        source: "#username"
-      - id: "#muse_call.password"
-        source: "#password"
+      - id: "#muse_call.postgres_config"
+        source: "#postgres_config"
+
 
     outputs:
       - id: "#muse_call.output_list"
@@ -91,10 +89,8 @@ steps:
         source: "#normal_id"
       - id: "#muse_sump_wxs.tumor_id"
         source: "#tumor_id"
-      - id: "#muse_sump_wxs.username"
-        source: "#username"
-      - id: "#muse_sump_wxs.password"
-        source: "#password"
+      - id: "#muse_sump_wxs.postgres_config"
+        source: "#postgres_config"
 
     outputs:
       - id: "#muse_sump_wxs.output_vcf"
