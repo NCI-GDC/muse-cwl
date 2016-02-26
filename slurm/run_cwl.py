@@ -217,6 +217,9 @@ if __name__ == "__main__":
 
     status, loc = update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logger)
 
+    print status
+    print loc
+
     status_postgres.add_status(engine, args.case_id, args.normal_id, str(vcf_uuid), [args.normal_id, args.tumor_id], status, loc)
 
     #remove work and input directories
