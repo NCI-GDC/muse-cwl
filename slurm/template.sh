@@ -17,10 +17,6 @@ case_id="XX_CASE_ID_XX"
 basedir="XX_BASEDIR_XX"
 s3dir="XX_S3DIR_XX"
 
-
-username="XX_USERNAME_XX"
-password="XX_PASSWORD_XX"
-
 repository="git@github.com:NCI-GDC/muse-cwl.git"
 
 wkdir=`mktemp -d -p /mnt/SCRATCH/` \
@@ -38,8 +34,6 @@ wkdir=`mktemp -d -p /mnt/SCRATCH/` \
 --case_id $case_id \
 --basedir $basedir \
 --s3dir $s3dir \
---username $username \
---password $password \
 --cwl $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
 
 sudo rm -rf $wkdir
