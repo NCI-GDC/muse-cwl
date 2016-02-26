@@ -16,7 +16,11 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
 
     loc = 'UNKNOWN'
     status = 'UNKNOWN'
-
+    print exit
+    print cwl_failure
+    print vcf_upload_location
+    print muse_location
+    print logger
 
     if sum(exit) == 0:
 
