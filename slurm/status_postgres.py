@@ -16,9 +16,8 @@ class ToolTypeMixin(object):
 
     id = Column(Integer, primary_key=True)
     case_id = Column(String)
-    gdc_id = Column(String)
     vcf_id = Column(String)
-    files = Column(String)
+    files = Column(ARRAY(String))
     status = Column(String)
     location = Column(String)
 
@@ -51,12 +50,12 @@ def add_status(engine, case_id, gdc_id, vcf_id, file_ids, status, output_locatio
     Session.configure(bind=engine)
     session = Session()
 
+
     met = MUSE(case_id = case_id,
-              gdc_id = gdc_id,
-              vcf_id = vcf_id,
-              files = file_ids,
-              status = status,
-              location = output_location)
+               vcf_id = vcf_id,
+               files = file_ids,
+               status = status,
+               location = output_location)
 
     create_table(engine, met)
     session.add(met)
