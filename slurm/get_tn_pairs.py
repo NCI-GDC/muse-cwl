@@ -1,4 +1,4 @@
-import postgres
+import status_postgres
 import argparse
 import os
 
@@ -6,11 +6,16 @@ import os
 if __name__ == "__main__":
 
 
-    parser = argparse.ArgumentParser(description="MuSE Variant calling")
+    parser = argparse.ArgumentParser(description="MuSE Variant Calling")
 
     required = parser.add_argument_group("Required input parameters")
     required.add_argument("--config", default=None, help="path to config file", required=True)
     required.add_argument("--outdir", default="./", help="otuput directory for slurm scripts")
+    required.add_argument("--refdir", default=None, help="path to ref dir on object store", required=True)
+    required.add_argument("--block", default=None, help="parallel block size", required=True)
+    required.add_argument("--thread_count", default=None, help="thread count", required=True)
+    required.add_argument("--basedir", default="/mnt/SCRATCH/", help="Base directory for computations", required=True)
+    required.add_argument("--s3dir", default="s3://muse_variant/", help="path to output files", required=True)
     args = parser.parse_args()
 
     if not os.path.isdir(args.outdir):
@@ -32,22 +37,37 @@ if __name__ == "__main__":
         'database' : 'prod_bioinfo'
     }
 
-    engine = postgres.db_connect(DATABASE)
+    engine = status_postgres.db_connect(DATABASE)
 
-    cases = postgres.get_case(engine, 'muse_status')
+    cases = status_postgres.get_case(engine, 'muse_status')
 
     for case in cases:
         slurm = open(os.path.join(args.outdir, "muse.%s.%s.sh" %(cases[case][1], cases[case][3])), "w")
         temp = open("template.sh", "r")
         for line in temp:
+            if "XX_REFDIR_XX" in line:
+                line = line.replace("XX_REFDIR_XX", args.refdir)
+
+            if "XX_BLOCKSIZE_XX" in line:
+                line = line.replace("XX_BLOCKSIZE_XX", str(args.block))
+
+            if "XX_THREAD_COUNT_XX" in line:
+                line = line.replace("XX_THREAD_COUNT_XX", str(args.thread_count))
+
+            if "XX_BASEDIR_XX" in line:
+                line = line.replace("XX_BASEDIR_XX", args.basedir)
+
+            if "XX_S3DIR_XX" in line:
+                line = line.replace("XX_S3DIR_XX", args.s3dir)
+
             if "XX_NORMAL_XX" in line:
                 line = line.replace("XX_NORMAL_XX", cases[case][2])
 
-            if "XX_TUMOR_XX" in line:
-                line = line.replace("XX_TUMOR_XX", cases[case][4])
-
             if "XX_NORMAL_ID_XX" in line:
                 line = line.replace("XX_NORMAL_ID_XX", cases[case][1])
+
+            if "XX_TUMOR_XX" in line:
+                line = line.replace("XX_TUMOR_XX", cases[case][4])
 
             if "XX_TUMOR_ID_XX" in line:
                 line = line.replace("XX_TUMOR_ID_XX", cases[case][3])
@@ -55,11 +75,11 @@ if __name__ == "__main__":
             if "XX_CASE_ID_XX" in line:
                 line = line.replace("XX_CASE_ID_XX", cases[case][0])
 
-            if "XX_username_XX" in line:
-                line = line.replace("XX_username_XX", config['username'])
+            if "XX_USERNAME_XX" in line:
+                line = line.replace("XX_USERNAME_XX", config['username'])
 
-            if "XX_password_XX" in line:
-                line = line.replace("XX_password_XX", config['password'])
+            if "XX_PASSWORD_XX" in line:
+                line = line.replace("XX_PASSWORD_XX", config['password'])
 
             slurm.write(line)
         slurm.close()
