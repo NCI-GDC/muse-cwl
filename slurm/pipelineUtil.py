@@ -24,7 +24,7 @@ def run_command(cmd, logger=None, shell_var=False):
 
     return exit_code
 
-def download_from_cleversafe(logger, remote_input, local_output, config="/home/ubuntu/.s3cfg"):
+def download_from_cleversafe(logger, remote_input, local_output, config):
     """ Download a file from cleversafe to a local folder """
 
     if (remote_input != ""):
