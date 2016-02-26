@@ -1,8 +1,12 @@
 #!/bin/bash
 #SBATCH --nodes=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=XX_THREAD_COUNT_XX
 #SBATCH --ntasks=1
-#SBATCH --workdir=/mnt/SCRATCH/
+#SBATCH --workdir=XX_BASEDIR_XX
+
+refdir="XX_REFDIR_XX"
+block="XX_BLOCKSIZE_XX"
+thread_count="XX_THREAD_COUNT_XX"
 
 normal="XX_NORMAL_XX"
 tumor="XX_TUMOR_XX"
@@ -10,40 +14,32 @@ normal_id="XX_NORMAL_ID_XX"
 tumor_id="XX_TUMOR_ID_XX"
 case_id="XX_CASE_ID_XX"
 
-basedir="/mnt/SCRATCH/"
-ref="s3://bioinformatics_scratch/muse_ref/GRCh38.d1.vd1.fa"
-refindex="s3://bioinformatics_scratch/muse_ref/GRCh38.d1.vd1.fa.fai"
-refdict="s3://bioinformatics_scratch/muse_ref/GRCh38.d1.vd1.dict"
-snp="s3://bioinformatics_scratch/muse_ref/dbsnp_144.grch38.vcf.bgz"
-snpindex="s3://bioinformatics_scratch/muse_ref/dbsnp_144.grch38.vcf.bgz.tbi"
+basedir="XX_BASEDIR_XX"
+s3dir="XX_S3DIR_XX"
 
-block="50000000"
-thread_count="8"
-username="username"
-password="password"
+
+username="XX_USERNAME_XX"
+password="XX_PASSWORD_XX"
+
 repository="git@github.com:NCI-GDC/muse-cwl.git"
-cwl="/home/ubuntu/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml"
-dir="/home/ubuntu/muse-cwl/"
 
-if [ ! -d $dir ];then
-    sudo git clone -b feat/slurm $repository $dir
-    sudo chown ubuntu:ubuntu $dir
-fi
-
-/home/ubuntu/.virtualenvs/p2/bin/python /home/ubuntu/muse-cwl/slurm/run_cwl.py \
---ref $ref \
---refindex $refindex \
---refdict $refdict \
---snp $snp \
---snpindex $snpindex \
+wkdir=`mktemp -d -p /mnt/SCRATCH/` \
+&& cd $wkdir \
+&& sudo git clone -b feat/slurm $repository \
+&& sudo chown ubuntu:ubuntu muse-cwl \
+&& /home/ubuntu/.virtualenvs/p2/bin/python muse-cwl/slurm/run_cwl.py \
+--refdir $refdir \
 --block $block \
 --thread_count $thread_count \
 --normal $normal \
---tumor $tumor \
 --normal_id $normal_id \
+--tumor $tumor \
 --tumor_id $tumor_id \
 --case_id $case_id \
+--basedir $basedir \
+--s3dir $s3dir \
 --username $username \
 --password $password \
---basedir $basedir \
---cwl $cwl
+--cwl $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
+
+sudo rm -rf $wkdir
