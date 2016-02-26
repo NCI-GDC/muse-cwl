@@ -80,8 +80,6 @@ if __name__ == "__main__":
     required.add_argument("--tumor_id", default=None, help="UUID for tumor BAM")
     required.add_argument("--case_id", default=None, help="UUID for case")
 
-    required.add_argument("--username", default=None, help="Username for postgres")
-    required.add_argument("--password", default=None, help="Password for postgres")
     required.add_argument("--cwl", default=None, help="Path to CWL code")
 
     optional = parser.add_argument_group("Optional input parameters")
@@ -98,19 +96,6 @@ if __name__ == "__main__":
     workdir = tempfile.mkdtemp(prefix="workdir_", dir=casedir)
     inp = tempfile.mkdtemp(prefix="input_", dir=casedir)
     index = tempfile.mkdtemp(prefix="index_", dir=casedir)
-
-    #establish connection with database
-
-    DATABASE = {
-        'drivername': 'postgres',
-        'host' : 'pgreadwrite.osdc.io',
-        'port' : '5432',
-        'username': args.username,
-        'password' : args.password,
-        'database' : 'prod_bioinfo'
-    }
-
-    engine = postgres.db_connect(DATABASE)
 
     #generate a random uuid
     vcf_uuid = uuid.uuid4()
@@ -139,14 +124,27 @@ if __name__ == "__main__":
     reference_fasta_name = os.path.join(index,"GRCh38.d1.vd1.fa")
     reference_fasta_fai = os.path.join(index,"GRCh38.d1.vd1.fa.fai")
     dbsnp_known_snp_sites = os.path.join(index,"dbsnp_144.grch38.vcf.bgz")
+    postgres_config = os.path.join(index,"postgres_config")
+    s3cfg_ceph = os.path.join(index,"s3cfg_ceph")
+    s3cfg_cleversafe = os.path.join(index,"s3cfg_cleversafe")
 
     logger.info("getting normal bam")
-    pipelineUtil.download_from_cleversafe(logger, os.path.dirname(args.normal)+'/', inp)
-    bam_norm = os.path.join(inp, os.path.basename(args.normal))
+    normal_path = os.path.dirname(args.normal)+'/'
+    if normal_path.startswith("s3://ceph_"):
+        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, s3cfg_ceph)
+        bam_norm = os.path.join(inp, os.path.basename(args.normal))
+    else:
+        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, s3cfg_cleversafe)
+        bam_norm = os.path.join(inp, os.path.basename(args.normal))
 
     logger.info("getting tumor bam")
-    pipelineUtil.download_from_cleversafe(logger, os.path.dirname(args.tumor)+'/',  inp)
-    bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
+    tumor_path = os.path.dirname(args.tumor)+'/'
+    if tumor_path.startswith("s3://ceph_"):
+        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, s3cfg_ceph)
+        bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
+    else:
+        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, s3cfg_cleversafe)
+        bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
 
     os.chdir(workdir)
     #run cwl command
@@ -161,8 +159,7 @@ if __name__ == "__main__":
             "--Parallel_Block_Size", str(args.block),
             "--thread_count", str(args.thread_count),
             "--case_id", args.case_id,
-            "--username", args.username,
-            "--password", args.password,
+            "--postgres_config", postgres_config,
             "--output", vcf_file
             ]
 
@@ -188,6 +185,22 @@ if __name__ == "__main__":
 
     cwl_end = time.time()
     cwl_elapsed = cwl_end - cwl_start
+
+    #establish connection with database
+    s = open(postgres_config, 'r').read()
+    postgres_config = eval(s)
+
+    DATABASE = {
+        'drivername': 'postgres',
+        'host' : 'pgreadwrite.osdc.io',
+        'port' : '5432',
+        'username': postgres_config['username'],
+        'password' : postgres_config['password'],
+        'database' : 'prod_bioinfo'
+    }
+
+    engine = postgres.db_connect(DATABASE)
+
     met = Time(case_id = args.case_id,
                datetime_now = datetime_now,
                vcf_id = str(vcf_uuid),
