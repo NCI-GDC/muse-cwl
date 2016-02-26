@@ -35,7 +35,7 @@ def download_from_cleversafe(logger, remote_input, local_output, config):
 
     return exit_code
 
-def upload_to_cleversafe(logger, remote_output, local_input, config="/home/ubuntu/.s3cfg"):
+def upload_to_cleversafe(logger, remote_output, local_input, config):
     """ Upload a file to cleversafe to a folder """
 
     if (remote_output != "" and (os.path.isfile(local_input) or os.path.isdir(local_input))):
