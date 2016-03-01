@@ -28,7 +28,7 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
 
         else:
 
-            status = 'POSTGRES_FAILED'
+            status = 'CWL_FAILED'
             logger.info("CWL failed but outputs were generated. The path is: %s" %muse_location)
 
     else:
@@ -161,7 +161,9 @@ if __name__ == "__main__":
             "--thread_count", str(args.thread_count),
             "--case_id", args.case_id,
             "--postgres_config", postgres_config,
-            "--output", vcf_file
+            "--output", vcf_file,
+            "--tmpdir-prefix", casedir,
+            "--tmp-outdir-prefix", workdir
             ]
 
     cwl_exit = pipelineUtil.run_command(cmd, logger)
