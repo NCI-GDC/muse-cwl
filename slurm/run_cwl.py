@@ -204,17 +204,18 @@ if __name__ == "__main__":
 
     engine = postgres.db_connect(DATABASE)
 
+    status, loc = update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logger)
+
     met = Time(case_id = args.case_id,
                datetime_now = datetime_now,
                vcf_id = str(vcf_uuid),
                files = [args.normal_id, args.tumor_id],
                elapsed = cwl_elapsed,
-               thread_count = str(args.thread_count))
-
+               thread_count = str(args.thread_count),
+               status = str(status))
+    
     postgres.create_table(engine, met)
     postgres.add_metrics(engine, met)
-
-    status, loc = update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logger)
 
     status_postgres.add_status(engine, args.case_id, args.normal_id, str(vcf_uuid), [args.normal_id, args.tumor_id], status, loc)
 
