@@ -151,8 +151,8 @@ if __name__ == "__main__":
     #run cwl command
     cmd = ['/home/ubuntu/.virtualenvs/p2/bin/cwl-runner',
             "--debug",
-            "--tmpdir-prefix", casedir,
-            "--tmp-outdir-prefix", workdir,
+            "--tmpdir-prefix", casedir + '/',
+            "--tmp-outdir-prefix", workdir + '/',
             args.cwl,
             "--reference_fasta_name", reference_fasta_name,
             "--reference_fasta_fai", reference_fasta_fai,
