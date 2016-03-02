@@ -149,7 +149,11 @@ if __name__ == "__main__":
 
     os.chdir(workdir)
     #run cwl command
-    cmd = ['/home/ubuntu/.virtualenvs/p2/bin/cwl-runner', "--debug", args.cwl,
+    cmd = ['/home/ubuntu/.virtualenvs/p2/bin/cwl-runner',
+            "--debug",
+            "--tmpdir-prefix", casedir,
+            "--tmp-outdir-prefix", workdir,
+            args.cwl,
             "--reference_fasta_name", reference_fasta_name,
             "--reference_fasta_fai", reference_fasta_fai,
             "--normal_bam_path", bam_norm,
@@ -161,9 +165,7 @@ if __name__ == "__main__":
             "--thread_count", str(args.thread_count),
             "--case_id", args.case_id,
             "--postgres_config", postgres_config,
-            "--output", vcf_file,
-            "--tmpdir-prefix", casedir,
-            "--tmp-outdir-prefix", workdir
+            "--output", vcf_file
             ]
 
     cwl_exit = pipelineUtil.run_command(cmd, logger)
@@ -213,7 +215,7 @@ if __name__ == "__main__":
                elapsed = cwl_elapsed,
                thread_count = str(args.thread_count),
                status = str(status))
-    
+
     postgres.create_table(engine, met)
     postgres.add_metrics(engine, met)
 
