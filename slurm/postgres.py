@@ -20,6 +20,7 @@ class ToolTypeMixin(object):
     files = Column(ARRAY(String))
     elapsed = Column(String)
     thread_count = Column(String)
+    status = Column(String)
 
     def __repr__(self):
         return "<ToolTypeMixin(systime='%d', usertime='%d', elapsed='%s', cpu='%d', max_resident_time='%d'>" %(self.systime,
