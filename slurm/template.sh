@@ -14,12 +14,11 @@ normal_id="XX_NORMAL_ID_XX"
 tumor_id="XX_TUMOR_ID_XX"
 case_id="XX_CASE_ID_XX"
 
-basedir="XX_BASEDIR_XX"
 s3dir="XX_S3DIR_XX"
 
 repository="git@github.com:NCI-GDC/muse-cwl.git"
 
-wkdir=`mktemp -d -p $basedir` \
+wkdir=`mktemp -d -p /mnt/SCRATCH/ -t muse.XXXXXXXXXX` \
 && cd $wkdir \
 && sudo git clone -b feat/slurm $repository \
 && sudo chown ubuntu:ubuntu muse-cwl \
@@ -32,8 +31,8 @@ wkdir=`mktemp -d -p $basedir` \
 --tumor $tumor \
 --tumor_id $tumor_id \
 --case_id $case_id \
---basedir $basedir \
+--basedir $wkdir \
 --s3dir $s3dir \
 --cwl $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
 
-sudo rm -rf $basedir
+sudo rm -rf $wkdir
