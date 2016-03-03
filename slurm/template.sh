@@ -18,7 +18,8 @@ s3dir="XX_S3DIR_XX"
 
 repository="git@github.com:NCI-GDC/muse-cwl.git"
 
-wkdir=`mktemp -d -p /mnt/SCRATCH/ -t muse.XXXXXXXXXX` \
+wkdir=`sudo mktemp -d -t muse.XXXXXXXXXX -p /mnt/SCRATCH/` \
+&& sudo chown ubuntu:ubuntu $wkdir \
 && cd $wkdir \
 && sudo git clone -b feat/slurm $repository \
 && sudo chown ubuntu:ubuntu muse-cwl \
