@@ -15,14 +15,16 @@ tumor_id="XX_TUMOR_ID_XX"
 case_id="XX_CASE_ID_XX"
 
 s3dir="XX_S3DIR_XX"
+WorkDir="/mnt/SCRATCH/"
 
 repository="git@github.com:NCI-GDC/muse-cwl.git"
 
-wkdir=`mktemp -d -p /mnt/SCRATCH/ -t muse.XXXXXXXXXX` \
-&& cd $wkdir \
-&& sudo git clone -b feat/slurm $repository \
-&& sudo chown ubuntu:ubuntu muse-cwl \
-&& /home/ubuntu/.virtualenvs/p2/bin/python muse-cwl/slurm/run_cwl.py \
+wkdir=`mktemp -d -p /mnt/SCRATCH/ -t muse.XXXXXXXXXX`
+cd $wkdir
+
+sudo git clone -b feat/slurm $repository
+sudo chown ubuntu:ubuntu muse-cwl
+/home/ubuntu/.virtualenvs/p2/bin/python muse-cwl/slurm/run_cwl.py \
 --refdir $refdir \
 --block $block \
 --thread_count $thread_count \
