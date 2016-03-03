@@ -18,12 +18,11 @@ s3dir="XX_S3DIR_XX"
 
 repository="git@github.com:NCI-GDC/muse-cwl.git"
 
-wkdir=`mktemp -d -p /mnt/SCRATCH/ -t muse.XXXXXXXXXX`
-cd $wkdir
-
-sudo git clone -b feat/slurm $repository
-sudo chown ubuntu:ubuntu muse-cwl
-/home/ubuntu/.virtualenvs/p2/bin/python muse-cwl/slurm/run_cwl.py \
+wkdir=`mktemp -d -p /mnt/SCRATCH/ -t muse.XXXXXXXXXX` \
+&& cd $wkdir \
+&& sudo git clone -b feat/slurm $repository \
+&& sudo chown ubuntu:ubuntu muse-cwl \
+&& /home/ubuntu/.virtualenvs/p2/bin/python muse-cwl/slurm/run_cwl.py \
 --refdir $refdir \
 --block $block \
 --thread_count $thread_count \
