@@ -2,7 +2,7 @@
 #SBATCH --nodes=1
 #SBATCH --cpus-per-task=XX_THREAD_COUNT_XX
 #SBATCH --ntasks=1
-#SBATCH --workdir=XX_BASEDIR_XX
+#SBATCH --workdir="/mnt/SCRATCH/"
 
 refdir="XX_REFDIR_XX"
 block="XX_BLOCKSIZE_XX"
@@ -15,7 +15,6 @@ tumor_id="XX_TUMOR_ID_XX"
 case_id="XX_CASE_ID_XX"
 
 s3dir="XX_S3DIR_XX"
-WorkDir="/mnt/SCRATCH/"
 
 repository="git@github.com:NCI-GDC/muse-cwl.git"
 
