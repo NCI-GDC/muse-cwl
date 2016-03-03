@@ -19,7 +19,7 @@ s3dir="XX_S3DIR_XX"
 
 repository="git@github.com:NCI-GDC/muse-cwl.git"
 
-wkdir=`mktemp -d -p /mnt/SCRATCH/` \
+wkdir=`mktemp -d -p $basedir` \
 && cd $wkdir \
 && sudo git clone -b feat/slurm $repository \
 && sudo chown ubuntu:ubuntu muse-cwl \
@@ -36,4 +36,4 @@ wkdir=`mktemp -d -p /mnt/SCRATCH/` \
 --s3dir $s3dir \
 --cwl $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
 
-sudo rm -rf $wkdir
+sudo rm -rf $basedir
