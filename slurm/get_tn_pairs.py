@@ -71,12 +71,6 @@ if __name__ == "__main__":
             if "XX_CASE_ID_XX" in line:
                 line = line.replace("XX_CASE_ID_XX", cases[case][0])
 
-            if "XX_USERNAME_XX" in line:
-                line = line.replace("XX_USERNAME_XX", config['username'])
-
-            if "XX_PASSWORD_XX" in line:
-                line = line.replace("XX_PASSWORD_XX", config['password'])
-
             slurm.write(line)
         slurm.close()
         temp.close()
