@@ -40,5 +40,5 @@ wkdir=`sudo mktemp -d -t muse.XXXXXXXXXX -p /mnt/SCRATCH/` \
 trap cleanup EXIT
 function cleanup (){
     echo "cleanup tmp data";
-    rm -rf $wkdir;
+    sudo rm -rf $wkdir;
 }
