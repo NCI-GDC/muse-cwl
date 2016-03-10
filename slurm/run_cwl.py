@@ -165,7 +165,7 @@ if __name__ == "__main__":
             "--thread_count", str(args.thread_count),
             "--case_id", args.case_id,
             "--postgres_config", postgres_config,
-            "--output", vcf_file
+            "--output_vcf", vcf_file
             ]
 
     cwl_exit = pipelineUtil.run_command(cmd, logger)
