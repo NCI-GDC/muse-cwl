@@ -36,4 +36,8 @@ wkdir=`sudo mktemp -d -t muse.XXXXXXXXXX -p /mnt/SCRATCH/` \
 --s3dir $s3dir \
 --cwl $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
 
-sudo rm -rf $wkdir
+trap cleanup EXIT
+function cleanup (){
+    echo "cleanup tmp data";
+    rm -rf $wkdir;
+}
