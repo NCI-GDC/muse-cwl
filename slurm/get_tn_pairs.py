@@ -15,6 +15,7 @@ if __name__ == "__main__":
     required.add_argument("--block", default=None, help="parallel block size", required=True)
     required.add_argument("--thread_count", default=None, help="thread count", required=True)
     required.add_argument("--s3dir", default="s3://muse_variant/", help="path to output files", required=True)
+    required.add_argument("--mem", default=None, help="mem for each node", required=True)
     args = parser.parse_args()
 
     if not os.path.isdir(args.outdir):
@@ -52,6 +53,9 @@ if __name__ == "__main__":
 
             if "XX_THREAD_COUNT_XX" in line:
                 line = line.replace("XX_THREAD_COUNT_XX", str(args.thread_count))
+
+            if "XX_MEM_XX" in line:
+                line = line.replace("XX_MEM_XX", str(args.mem))
 
             if "XX_S3DIR_XX" in line:
                 line = line.replace("XX_S3DIR_XX", args.s3dir)
