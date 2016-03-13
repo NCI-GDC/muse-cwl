@@ -85,6 +85,7 @@ if __name__ == "__main__":
 
     optional = parser.add_argument_group("Optional input parameters")
     optional.add_argument("--s3dir", default="s3://ceph_kh11_baylor_muse_variant", help="path to output files")
+    optional.add_argument("--ceph", default=None, help="s3 ceph config")
     optional.add_argument("--basedir", default="/mnt/SCRATCH/", help="Base directory for computations")
 
     args = parser.parse_args()
@@ -125,7 +126,7 @@ if __name__ == "__main__":
     reference_fasta_fai = os.path.join(index,"GRCh38.d1.vd1.fa.fai")
     dbsnp_known_snp_sites = os.path.join(index,"dbsnp_144.grch38.vcf.bgz")
     postgres_config = os.path.join(index,"postgres_config")
-    s3cfg_ceph = os.path.join(index,"s3cfg_ceph")
+    s3cfg_ceph = args.ceph
     s3cfg_cleversafe = os.path.join(index,"s3cfg_cleversafe")
 
     logger.info("getting normal bam")
