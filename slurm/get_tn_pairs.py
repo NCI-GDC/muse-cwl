@@ -74,7 +74,14 @@ if __name__ == "__main__":
 
             if "XX_CASE_ID_XX" in line:
                 line = line.replace("XX_CASE_ID_XX", cases[case][0])
+                
+            if "XX_CEPH_XX" in line:
+                if count_host % 2 == 0:
+                    line = line.replace("XX_CEPH_XX", '/mnt/SCRATCH/reference/s3cfg_kh11')
+                else:
+                    line = line.replace("XX_CEPH_XX", '/mnt/SCRATCH/reference/s3cfg_kh13')
 
             slurm.write(line)
+        count_host += 1
         slurm.close()
         temp.close()
