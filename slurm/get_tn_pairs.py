@@ -39,6 +39,7 @@ if __name__ == "__main__":
 
     engine = status_postgres.db_connect(DATABASE)
 
+    count_host = 0
     cases = status_postgres.get_case(engine, 'muse_status')
 
     for case in cases:
