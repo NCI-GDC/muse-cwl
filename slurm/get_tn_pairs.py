@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     DATABASE = {
         'drivername': 'postgres',
-        'host' : 's/pgreadwrite.osdc.io/172.17.65.79/',
+        'host' : '172.17.65.79',
         'port' : '5432',
         'username': config['username'],
         'password' : config['password'],
