@@ -13,7 +13,8 @@ Base = declarative_base()
 
 class ToolTypeMixin(object):
     """ Gather information about processing status """
-
+    
+    id = Column(Integer, primary_key=True)
     case_id = Column(String)
     vcf_id = Column(String)
     files = Column(ARRAY(String))
