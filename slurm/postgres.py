@@ -13,7 +13,6 @@ Base = declarative_base()
 class ToolTypeMixin(object):
     """ Gather the timing metrics for different datasets """
 
-    id = Column(Integer, primary_key=True)
     case_id = Column(String)
     datetime_now = Column(String)
     vcf_id = Column(String)
