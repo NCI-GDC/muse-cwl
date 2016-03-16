@@ -43,7 +43,7 @@ def create_table(engine, tool):
     if tool.__tablename__ not in tables:
         Base.metadata.create_all(engine)
 
-def add_status(engine, case_id, gdc_id, vcf_id, file_ids, status, output_location):
+def add_status(engine, case_id, vcf_id, file_ids, status, output_location):
     """ add provided metrics to database """
 
     Session = sessionmaker()
