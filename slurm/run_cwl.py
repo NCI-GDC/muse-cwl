@@ -197,7 +197,7 @@ if __name__ == "__main__":
 
     DATABASE = {
         'drivername': 'postgres',
-        'host' : '172.17.65.79',
+        'host' : 'pgreadwrite.osdc.io',
         'port' : '5432',
         'username': postgres_config['username'],
         'password' : postgres_config['password'],
