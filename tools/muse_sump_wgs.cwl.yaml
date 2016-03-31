@@ -66,12 +66,7 @@ outputs:
     type: File
     description: "The MuSE VCF file"
     outputBinding:
-      glob:
-        engine: node-engine.cwl
-        script: |
-          {
-            return $job['output_vcf']
-          }
+      glob: $(inputs['output_vcf'])
 
   - id: "#log"
     type: File
