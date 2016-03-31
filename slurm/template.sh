@@ -30,7 +30,7 @@ function cleanup (){
 
 sudo git clone -b feat/slurm $repository
 sudo chown ubuntu:ubuntu -R muse-cwl
-cwl = $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
+
 trap cleanup EXIT
 
 /home/ubuntu/.virtualenvs/p2/bin/python muse-cwl/slurm/run_cwl.py \
@@ -45,4 +45,4 @@ trap cleanup EXIT
 --basedir $wkdir \
 --s3dir $s3dir \
 --ceph $ceph \
---cwl $cwl
+--cwl $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
