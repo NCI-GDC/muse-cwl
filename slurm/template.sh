@@ -29,7 +29,7 @@ function cleanup (){
 }
 
 sudo git clone -b feat/slurm $repository
-sudo chown ubuntu:ubuntu muse-cwl
+sudo chown ubuntu:ubuntu -R muse-cwl
 cwl = $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
 trap cleanup EXIT
 
