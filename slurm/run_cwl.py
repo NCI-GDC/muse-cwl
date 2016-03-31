@@ -17,7 +17,7 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
     loc = 'UNKNOWN'
     status = 'UNKNOWN'
 
-    if sum(exit) == 0:
+    if exit == 0:
 
         loc = vcf_upload_location
 
@@ -45,19 +45,6 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
             logger.info("CWL and upload both failed")
 
     return(status, loc)
-
-def upload_all_output(localdir, remotedir, logger, config):
-    """ upload output files to object store """
-
-    all_exit_code = list()
-
-    for filename in os.listdir(localdir):
-        localfilepath = os.path.join(localdir, filename)
-        remotefilepath = os.path.join(remotedir, filename)
-        exit_code = pipelineUtil.upload_to_cleversafe(logger, remotefilepath, localfilepath, config)
-        all_exit_code.append(exit_code)
-
-    return all_exit_code
 
 def is_nat(x):
     '''
