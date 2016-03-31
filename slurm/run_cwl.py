@@ -186,7 +186,7 @@ if __name__ == "__main__":
 
     vcf_upload_location = os.path.join(muse_location, vcf_file)
 
-    exit = upload_all_output(workdir, muse_location, logger, s3cfg_ceph)
+    exit = pipelineUtil.upload_to_cleversafe(logger, muse_location, workdir, s3cfg_ceph)
 
     cwl_end = time.time()
     cwl_elapsed = cwl_end - cwl_start
