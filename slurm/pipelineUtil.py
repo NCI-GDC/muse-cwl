@@ -24,7 +24,7 @@ def run_command(cmd, logger=None, shell_var=False):
 
     return exit_code
 
-def download_from_cleversafe(logger, remote_input, local_output, endpoint_url='http://gdc-cephb-objstore.osdc.io/', profile='ceph'):
+def download_from_cleversafe(logger, remote_input, local_output, profile, endpoint_url='http://gdc-cephb-objstore.osdc.io/'):
     """ Download a file from cleversafe to a local folder """
 
     if (remote_input != ""):
@@ -36,7 +36,7 @@ def download_from_cleversafe(logger, remote_input, local_output, endpoint_url='h
         raise Exception("invalid input %s" % remote_input)
     return exit_code
 
-def upload_to_cleversafe(logger, remote_output, local_input, endpoint_url='http://gdc-cephb-objstore.osdc.io/', profile='ceph'):
+def upload_to_cleversafe(logger, remote_output, local_input, profile, endpoint_url='http://gdc-cephb-objstore.osdc.io/'):
     """ Upload a file to cleversafe to a folder """
 
     if (remote_output != "" and (os.path.isfile(local_input) or os.path.isdir(local_input))):

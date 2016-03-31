@@ -115,13 +115,21 @@ if __name__ == "__main__":
 
     logger.info("getting normal bam")
     normal_path = os.path.dirname(args.normal)+'/'
-    pipelineUtil.download_from_cleversafe(logger, normal_path, inp)
-    bam_norm = os.path.join(inp, os.path.basename(args.normal))
+    if normal_path.startswith("s3://ceph_"):
+        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, "ceph")
+        bam_norm = os.path.join(inp, os.path.basename(args.normal))
+    else:
+        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, "cleversafe")
+        bam_norm = os.path.join(inp, os.path.basename(args.normal))
 
     logger.info("getting tumor bam")
     tumor_path = os.path.dirname(args.tumor)+'/'
-    pipelineUtil.download_from_cleversafe(logger, tumor_path, inp)
-    bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
+    if tumor_path.startswith("s3://ceph_"):
+        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, "ceph")
+        bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
+    else:
+        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, "cleversafe")
+        bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
 
     os.chdir(workdir)
     #run cwl command
@@ -162,7 +170,7 @@ if __name__ == "__main__":
 
     vcf_upload_location = os.path.join(muse_location, vcf_file)
 
-    exit = pipelineUtil.upload_to_cleversafe(logger, muse_location, workdir)
+    exit = pipelineUtil.upload_to_cleversafe(logger, muse_location, workdir, "ceph")
 
     cwl_end = time.time()
     cwl_elapsed = cwl_end - cwl_start
