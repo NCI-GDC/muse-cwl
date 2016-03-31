@@ -18,13 +18,22 @@ case_id="XX_CASE_ID_XX"
 s3dir="XX_S3DIR_XX"
 ceph="XX_CEPH_XX"
 repository="git@github.com:NCI-GDC/muse-cwl.git"
+wkdir=`sudo mktemp -d muse.XXXXXXXXXX -p /mnt/SCRATCH/`
+sudo chown ubuntu:ubuntu $wkdir
 
-wkdir=`sudo mktemp -d -t muse.XXXXXXXXXX -p /mnt/SCRATCH/` \
-&& sudo chown ubuntu:ubuntu $wkdir \
-&& cd $wkdir \
-&& sudo git clone -b feat/slurm $repository \
-&& sudo chown ubuntu:ubuntu muse-cwl \
-&& /home/ubuntu/.virtualenvs/p2/bin/python muse-cwl/slurm/run_cwl.py \
+cd $wkdir
+
+function cleanup (){
+    echo "cleanup tmp data";
+    sudo rm -rf $wkdir;
+}
+
+sudo git clone -b feat/slurm $repository
+sudo chown ubuntu:ubuntu muse-cwl
+cwl = $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
+trap cleanup EXIT
+
+/home/ubuntu/.virtualenvs/p2/bin/python muse-cwl/slurm/run_cwl.py \
 --refdir $refdir \
 --block $block \
 --thread_count $thread_count \
@@ -36,10 +45,4 @@ wkdir=`sudo mktemp -d -t muse.XXXXXXXXXX -p /mnt/SCRATCH/` \
 --basedir $wkdir \
 --s3dir $s3dir \
 --ceph $ceph \
---cwl $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml
-
-trap cleanup EXIT
-function cleanup (){
-    echo "cleanup tmp data";
-    sudo rm -rf $wkdir;
-}
+--cwl $cwl
