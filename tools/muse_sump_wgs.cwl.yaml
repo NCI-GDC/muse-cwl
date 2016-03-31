@@ -15,7 +15,7 @@ requirements:
   - import: node-engine.cwl
   - import: envvar-global.cwl
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/muse-tool:1.5d
+    dockerPull: quay.io/ncigdc/muse-tool:1.6a
 
 class: CommandLineTool
 
