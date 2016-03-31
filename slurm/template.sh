@@ -16,7 +16,6 @@ tumor_id="XX_TUMOR_ID_XX"
 case_id="XX_CASE_ID_XX"
 
 s3dir="XX_S3DIR_XX"
-ceph="XX_CEPH_XX"
 repository="git@github.com:NCI-GDC/muse-cwl.git"
 wkdir=`sudo mktemp -d muse.XXXXXXXXXX -p /mnt/SCRATCH/`
 sudo chown ubuntu:ubuntu $wkdir
@@ -44,5 +43,4 @@ trap cleanup EXIT
 --case_id $case_id \
 --basedir $wkdir \
 --s3dir $s3dir \
---ceph $ceph \
 --cwl $wkdir/muse-cwl/workflows/muse-wxs-workflow.cwl.yaml

@@ -72,7 +72,6 @@ if __name__ == "__main__":
 
     optional = parser.add_argument_group("Optional input parameters")
     optional.add_argument("--s3dir", default="s3://ceph_kh11_baylor_muse_variant", help="path to output files")
-    optional.add_argument("--ceph", default=None, help="s3 ceph config")
     optional.add_argument("--basedir", default="/mnt/SCRATCH/", help="Base directory for computations")
 
     args = parser.parse_args()
@@ -113,26 +112,16 @@ if __name__ == "__main__":
     reference_fasta_fai = os.path.join(index,"GRCh38.d1.vd1.fa.fai")
     dbsnp_known_snp_sites = os.path.join(index,"dbsnp_144.grch38.vcf.bgz")
     postgres_config = os.path.join(index,"postgres_config")
-    s3cfg_ceph = args.ceph
-    s3cfg_cleversafe = os.path.join(index,"s3cfg_cleversafe")
 
     logger.info("getting normal bam")
     normal_path = os.path.dirname(args.normal)+'/'
-    if normal_path.startswith("s3://ceph_"):
-        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, s3cfg_ceph)
-        bam_norm = os.path.join(inp, os.path.basename(args.normal))
-    else:
-        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, s3cfg_cleversafe)
-        bam_norm = os.path.join(inp, os.path.basename(args.normal))
+    pipelineUtil.download_from_cleversafe(logger, normal_path, inp)
+    bam_norm = os.path.join(inp, os.path.basename(args.normal))
 
     logger.info("getting tumor bam")
     tumor_path = os.path.dirname(args.tumor)+'/'
-    if tumor_path.startswith("s3://ceph_"):
-        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, s3cfg_ceph)
-        bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
-    else:
-        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, s3cfg_cleversafe)
-        bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
+    pipelineUtil.download_from_cleversafe(logger, tumor_path, inp)
+    bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
 
     os.chdir(workdir)
     #run cwl command
@@ -173,7 +162,7 @@ if __name__ == "__main__":
 
     vcf_upload_location = os.path.join(muse_location, vcf_file)
 
-    exit = pipelineUtil.upload_to_cleversafe(logger, muse_location, workdir, s3cfg_ceph)
+    exit = pipelineUtil.upload_to_cleversafe(logger, muse_location, workdir)
 
     cwl_end = time.time()
     cwl_elapsed = cwl_end - cwl_start
