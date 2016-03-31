@@ -34,7 +34,6 @@ def download_from_cleversafe(logger, remote_input, local_output, config, endpoin
         exit_code = run_command(cmd, logger)
     else:
         raise Exception("invalid input %s" % remote_input)
-
     return exit_code
 
 def upload_to_cleversafe(logger, remote_output, local_input, config, endpoint_url='http://gdc-cephb-objstore.osdc.io/', profile='ceph'):
@@ -46,6 +45,7 @@ def upload_to_cleversafe(logger, remote_output, local_input, config, endpoint_ur
         exit_code = run_command(cmd, logger)
     else:
         raise Exception("invalid input %s or output %s" %(local_input, remote_output))
+    return exit_code
 
 def remove_dir(dirname):
     """ Remove a directory and all it's contents """
