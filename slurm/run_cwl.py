@@ -23,7 +23,7 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
 
         if not(cwl_failure):
 
-            status = 'COMPLETED'
+            status = '0427_COMPLETED'
             logger.info("uploaded all files to object store. The path is: %s" %muse_location)
 
         else:
