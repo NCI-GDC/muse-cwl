@@ -23,7 +23,7 @@ def update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logge
 
         if not(cwl_failure):
 
-            status = '0427_COMPLETED'
+            status = '0428_COMPLETED'
             logger.info("uploaded all files to object store. The path is: %s" %muse_location)
 
         else:
@@ -160,9 +160,11 @@ if __name__ == "__main__":
 
     #rename outputs
     orglog2 = os.path.join(workdir, "%s_muse_call.log" % args.case_id)
-    os.rename(orglog2, os.path.join(workdir, "%s_muse_call.log" % str(vcf_uuid)))
+    if os.path.isfile(orglog2):
+        os.rename(orglog2, os.path.join(workdir, "%s_muse_call.log" % str(vcf_uuid)))
     orglog3 = os.path.join(workdir, "%s_muse_sump_wxs.log" % args.case_id)
-    os.rename(orglog3, os.path.join(workdir, "%s_muse_sump_wxs.log" % str(vcf_uuid)))
+    if os.path.isfile(orglog3):
+        os.rename(orglog3, os.path.join(workdir, "%s_muse_sump_wxs.log" % str(vcf_uuid)))
 
     #upload results to s3
 
