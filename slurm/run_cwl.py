@@ -116,19 +116,19 @@ if __name__ == "__main__":
     logger.info("getting normal bam")
     normal_path = os.path.dirname(args.normal)+'/'
     if normal_path.startswith("s3://ceph_"):
-        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, "ceph", "http://gdc-cephb-objstore.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, "ceph", "https://gdc-cephb-objstore.osdc.io/")
         bam_norm = os.path.join(inp, os.path.basename(args.normal))
     else:
-        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, "cleversafe", "http://gdc-accessors.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, "cleversafe", "https://gdc-accessors.osdc.io/")
         bam_norm = os.path.join(inp, os.path.basename(args.normal))
 
     logger.info("getting tumor bam")
     tumor_path = os.path.dirname(args.tumor)+'/'
     if tumor_path.startswith("s3://ceph_"):
-        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, "ceph", "http://gdc-cephb-objstore.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, "ceph", "https://gdc-cephb-objstore.osdc.io/")
         bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
     else:
-        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, "cleversafe", "http://gdc-accessors.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, "cleversafe", "https://gdc-accessors.osdc.io/")
         bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
 
     os.chdir(workdir)
@@ -172,7 +172,7 @@ if __name__ == "__main__":
 
     vcf_upload_location = os.path.join(muse_location, vcf_file)
 
-    exit = pipelineUtil.upload_to_cleversafe(logger, muse_location, workdir, "ceph", "http://gdc-cephb-objstore.osdc.io/")
+    exit = pipelineUtil.upload_to_cleversafe(logger, muse_location, workdir, "ceph", "https://gdc-cephb-objstore.osdc.io/")
 
     cwl_end = time.time()
     cwl_elapsed = cwl_end - cwl_start
