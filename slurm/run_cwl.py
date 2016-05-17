@@ -179,14 +179,14 @@ if __name__ == "__main__":
 
     #establish connection with database
     s = open(postgres_config, 'r').read()
-    postgres_config = eval(s)
+    postgres_creds = eval(s)
 
     DATABASE = {
         'drivername': 'postgres',
         'host' : 'pgreadwrite.osdc.io',
         'port' : '5432',
-        'username': postgres_config['username'],
-        'password' : postgres_config['password'],
+        'username': postgres_creds['username'],
+        'password' : postgres_creds['password'],
         'database' : 'prod_bioinfo'
     }
 
