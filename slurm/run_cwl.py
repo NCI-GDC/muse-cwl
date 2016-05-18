@@ -131,9 +131,11 @@ if __name__ == "__main__":
     engine = postgres.db_connect(DATABASE)
 
     logger.info("getting normal bam")
+    normal_bam_input_url = str(args.normal)
+    normal_bai_input_url = bam_input_url[:-1]+'i'
+    tumor_bam_input_url = str(args.normal)
+    tumor_bai_input_url = bam_input_url[:-1]+'i'
     if args.normal.startswith("s3://ceph_"):
-        normal_bam_input_url = str(args.normal)
-        normal_bai_input_url = bam_input_url[:-1]+'i'
         pipelineUtil.download_from_cleversafe(logger, normal_bam_input_url, str(inp), "ceph", "https://gdc-cephb-objstore.osdc.io/")
         pipelineUtil.download_from_cleversafe(logger, normal_bai_input_url, str(inp), "ceph", "https://gdc-cephb-objstore.osdc.io/")
         bam_norm = os.path.join(inp, os.path.basename(args.normal))
@@ -144,8 +146,6 @@ if __name__ == "__main__":
 
     logger.info("getting tumor bam")
     if args.tumor.startswith("s3://ceph_"):
-        tumor_bam_input_url = str(args.normal)
-        tumor_bai_input_url = bam_input_url[:-1]+'i'
         pipelineUtil.download_from_cleversafe(logger, tumor_bam_input_url, str(inp), "ceph", "https://gdc-cephb-objstore.osdc.io/")
         pipelineUtil.download_from_cleversafe(logger, tumor_bai_input_url, str(inp), "ceph", "https://gdc-cephb-objstore.osdc.io/")
         bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
