@@ -2,6 +2,7 @@ import argparse
 import pipelineUtil
 import uuid
 import os
+import sys
 import postgres
 import status_postgres
 import setupLog
@@ -67,7 +68,7 @@ if __name__ == "__main__":
     required.add_argument("--normal_id", default=None, help="UUID for normal BAM")
     required.add_argument("--tumor_id", default=None, help="UUID for tumor BAM")
     required.add_argument("--case_id", default=None, help="UUID for case")
-
+    required.add_argument("--index", default=None, help="Path to CWL BuildBamIndex tool code")
     required.add_argument("--cwl", default=None, help="Path to CWL code")
 
     optional = parser.add_argument_group("Optional input parameters")
@@ -88,6 +89,7 @@ if __name__ == "__main__":
     #generate a random uuid
     vcf_uuid = uuid.uuid4()
     vcf_file = "%s.vcf" %(str(vcf_uuid))
+    muse_location = os.path.join(args.s3dir, str(vcf_uuid))
 
     #setup logger
     log_file = os.path.join(workdir, "%s.muse.cwl.log" %str(vcf_uuid))
@@ -113,43 +115,64 @@ if __name__ == "__main__":
     dbsnp_known_snp_sites = os.path.join(index,"dbsnp_144.grch38.vcf.bgz")
     postgres_config = os.path.join(index,"postgres_config")
 
+    #establish connection with database
+    s = open(postgres_config, 'r').read()
+    postgres_creds = eval(s)
+
+    DATABASE = {
+        'drivername': 'postgres',
+        'host' : 'pgreadwrite.osdc.io',
+        'port' : '5432',
+        'username': postgres_creds['username'],
+        'password' : postgres_creds['password'],
+        'database' : 'prod_bioinfo'
+    }
+
+    engine = postgres.db_connect(DATABASE)
+
     logger.info("getting normal bam")
-    normal_path = os.path.dirname(args.normal)+'/'
-    if normal_path.startswith("s3://ceph_"):
-        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, "ceph", "https://gdc-cephb-objstore.osdc.io/")
+    if args.normal.startswith("s3://ceph_"):
+        normal_bam_input_url = str(args.normal)
+        normal_bai_input_url = bam_input_url[:-1]+'i'
+        pipelineUtil.download_from_cleversafe(logger, normal_bam_input_url, str(inp), "ceph", "https://gdc-cephb-objstore.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, normal_bai_input_url, str(inp), "ceph", "https://gdc-cephb-objstore.osdc.io/")
         bam_norm = os.path.join(inp, os.path.basename(args.normal))
     else:
-        pipelineUtil.download_from_cleversafe(logger, normal_path, inp, "cleversafe", "https://gdc-accessors.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, normal_bam_input_url, str(inp), "cleversafe", "https://gdc-accessors.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, normal_bai_input_url, str(inp), "cleversafe", "https://gdc-accessors.osdc.io/")
         bam_norm = os.path.join(inp, os.path.basename(args.normal))
 
     logger.info("getting tumor bam")
-    tumor_path = os.path.dirname(args.tumor)+'/'
-    if tumor_path.startswith("s3://ceph_"):
-        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, "ceph", "https://gdc-cephb-objstore.osdc.io/")
+    if args.tumor.startswith("s3://ceph_"):
+        tumor_bam_input_url = str(args.normal)
+        tumor_bai_input_url = bam_input_url[:-1]+'i'
+        pipelineUtil.download_from_cleversafe(logger, tumor_bam_input_url, str(inp), "ceph", "https://gdc-cephb-objstore.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, tumor_bai_input_url, str(inp), "ceph", "https://gdc-cephb-objstore.osdc.io/")
         bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
     else:
-        pipelineUtil.download_from_cleversafe(logger, tumor_path, inp, "cleversafe", "https://gdc-accessors.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, tumor_bam_input_url, str(inp), "cleversafe", "https://gdc-accessors.osdc.io/")
+        pipelineUtil.download_from_cleversafe(logger, tumor_bai_input_url, str(inp), "cleversafe", "https://gdc-accessors.osdc.io/")
         bam_tumor = os.path.join(inp, os.path.basename(args.tumor))
 
     os.chdir(workdir)
     #run cwl command
-    cmd = ['/home/ubuntu/.virtualenvs/p2/bin/cwl-runner',
+    cmd = ["/home/ubuntu/.virtualenvs/p2/bin/cwl-runner",
             "--debug",
-            "--tmpdir-prefix", inp,
-            "--tmp-outdir-prefix", workdir,
-            args.cwl,
-            "--reference_fasta_name", reference_fasta_name,
-            "--reference_fasta_fai", reference_fasta_fai,
-            "--normal_bam_path", bam_norm,
-            "--tumor_bam_path", bam_tumor,
-            "--normal_id", args.normal_id,
-            "--tumor_id", args.tumor_id,
-            "--dbsnp_known_snp_sites", dbsnp_known_snp_sites,
+            "--tmpdir-prefix", str(inp),
+            "--tmp-outdir-prefix", str(workdir),
+            str(args.cwl),
+            "--reference_fasta_name", str(reference_fasta_name),
+            "--reference_fasta_fai", str(reference_fasta_fai),
+            "--normal_bam_path", str(bam_norm),
+            "--tumor_bam_path", str(bam_tumor),
+            "--normal_id", str(args.normal_id),
+            "--tumor_id", str(args.tumor_id),
+            "--dbsnp_known_snp_sites", str(dbsnp_known_snp_sites),
             "--Parallel_Block_Size", str(args.block),
             "--thread_count", str(args.thread_count),
-            "--case_id", args.case_id,
-            "--postgres_config", postgres_config,
-            "--output_vcf", vcf_file
+            "--case_id", str(args.case_id),
+            "--postgres_config", str(postgres_config),
+            "--output_vcf", str(vcf_file)
             ]
 
     cwl_exit = pipelineUtil.run_command(cmd, logger)
@@ -176,21 +199,6 @@ if __name__ == "__main__":
 
     cwl_end = time.time()
     cwl_elapsed = cwl_end - cwl_start
-
-    #establish connection with database
-    s = open(postgres_config, 'r').read()
-    postgres_creds = eval(s)
-
-    DATABASE = {
-        'drivername': 'postgres',
-        'host' : 'pgreadwrite.osdc.io',
-        'port' : '5432',
-        'username': postgres_creds['username'],
-        'password' : postgres_creds['password'],
-        'database' : 'prod_bioinfo'
-    }
-
-    engine = postgres.db_connect(DATABASE)
 
     status, loc = update_postgres(exit, cwl_failure, vcf_upload_location, muse_location, logger)
 
