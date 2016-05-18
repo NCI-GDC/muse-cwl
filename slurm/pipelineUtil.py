@@ -29,7 +29,7 @@ def download_from_cleversafe(logger, remote_input, local_output, profile, endpoi
 
     if (remote_input != ""):
         #cmd = ['s3cmd', '-c', config, 'sync', remote_input, local_output]
-        cmd = ['/home/ubuntu/.virtualenvs/p2/bin/aws', '--profile', profile, '--endpoint-url', endpoint_url, '--no-verify-ssl', 's3', 'cp', remote_input, local_output, '--recursive']
+        cmd = ['/home/ubuntu/.virtualenvs/p2/bin/aws', '--profile', profile, '--endpoint-url', endpoint_url, '--no-verify-ssl', 's3', 'cp', remote_input, local_output]
         print cmd
         exit_code = run_command(cmd, logger)
     else:
