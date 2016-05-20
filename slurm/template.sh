@@ -8,6 +8,7 @@
 refdir="XX_REFDIR_XX"
 block="XX_BLOCKSIZE_XX"
 thread_count="XX_THREAD_COUNT_XX"
+host="XX_HOST_XX"
 
 normal="XX_NORMAL_XX"
 tumor="XX_TUMOR_XX"
@@ -36,6 +37,7 @@ trap cleanup EXIT
 --refdir $refdir \
 --block $block \
 --thread_count $thread_count \
+--host $host \
 --normal $normal \
 --normal_id $normal_id \
 --tumor $tumor \

@@ -62,6 +62,7 @@ if __name__ == "__main__":
     required.add_argument("--refdir", help="path to reference dir on object store")
     required.add_argument("--block", type=is_nat, default=50000000, help="parallel block size")
     required.add_argument('--thread_count', type=is_nat, default=8, help='thread count')
+    required.add_argument('--host', default=None, help="hostname for db")
 
     required.add_argument("--normal", default=None, help="path to normal bam file")
     required.add_argument("--tumor", default=None, help="path to tumor bam file")
@@ -172,8 +173,8 @@ if __name__ == "__main__":
             "--thread_count", str(args.thread_count),
             "--case_id", str(args.case_id),
             "--postgres_config", str(postgres_config),
-            "--output_vcf", str(vcf_file)
-            ]
+            "--output_vcf", str(vcf_file),
+            "--host", str(args.host)]
 
     cwl_exit = pipelineUtil.run_command(cmd, logger)
 
