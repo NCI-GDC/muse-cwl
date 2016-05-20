@@ -27,6 +27,8 @@ inputs:
     type: string
   - id: "#postgres_config"
     type: File
+  - id: "#host"
+    type: string
 
 
 outputs:
@@ -67,7 +69,8 @@ steps:
         source: "#tumor_id"
       - id: "#muse_call.postgres_config"
         source: "#postgres_config"
-
+      - id: "#muse_call.host"
+        source: "#host"
 
     outputs:
       - id: "#muse_call.output_list"
@@ -91,6 +94,8 @@ steps:
         source: "#tumor_id"
       - id: "#muse_sump_wgs.postgres_config"
         source: "#postgres_config"
+      - id: "#muse_sump_wgs.host"
+        source: "#host"
 
     outputs:
       - id: "#muse_sump_wgs.output_vcf"
