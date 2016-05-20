@@ -65,6 +65,11 @@ inputs:
     inputBinding:
       prefix: --thread_count
 
+  - id: "#host"
+    type: string
+    inputBinding:
+      prefix: --host
+
   - id: "#Parallel_Block_Size"
     type: string
     inputBinding:
