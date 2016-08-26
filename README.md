@@ -1,4 +1,3 @@
-###This branch is supposed to be installed on slurm cluster controller node by salt.
 ####1. Create slurm bash scripts.
 
 ```
