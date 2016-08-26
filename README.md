@@ -9,6 +9,7 @@ python /path/to/this/repo/branch/slurm/get_tn_pairs.py \
 
 This code takes your GDC postgres credentials to get completed cocleaned tumor and normal pair information, and generate slurm bash script based on template.sh
 Please manually add your GDC postgres credentials in template.sh (e.g. "username" and "password") before running the python code.
+All reference files are pre-stated on all slurm workers.
 
 ####2. Put your slurm bash scripts into slurm cluster controller node.
 
