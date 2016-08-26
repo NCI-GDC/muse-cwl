@@ -1,13 +1,23 @@
-To submit a new workflow or tool description please make a pull request against this repository.
+###This branch is supposed to be installed on slurm cluster controller node by salt.
+####1. Create slurm bash scripts.
 
-###single cwl-tool usage:
-MuSE call usage:  cwl-runner /path/to/tools/muse_call.cwl.yaml --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --uuid uuid
+```
+python /path/to/this/repo/branch/slurm/get_tn_pairs.py \
+--config /path/to/your/GDC/postgres/config/file/ \
+--outdir /path/to/desired/output/dir/
+```
 
-MuSE sump wxs usage:  cwl-runner /path/to/tools/muse_sump_wxs.cwl.yaml --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp.bgz --uuid uuid  
+This code takes your GDC postgres credentials to get completed cocleaned tumor and normal pair information, and generate slurm bash script based on template.sh
+Please manually add your GDC postgres credentials in template.sh (e.g. "username" and "password") before running the python code.
 
-MuSE sump wgs usage:  cwl-runner /path/to/tools/muse_sump_wgs.cwl.yaml --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp.bgz --uuid uuid
+####2. Put your slurm bash scripts into slurm cluster controller node.
 
-###cwl-workflow usage:
-MuSE for WXS: cwl-runner --debug /path/to/muse-wxs-workflow.cwl.yaml --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --dbsnp_known_snp_sites /path/to/dbsnp.bgz --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --uuid uuid
+Please ask administrant to get ip address of controller node.
 
-MuSE for WGS: cwl-runner --debug /path/to/muse-wgs-workflow.cwl.yaml --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --dbsnp_known_snp_sites /path/to/dbsnp.bgz --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --uuid uuid
+####3. Make a for loop to run sbatch.
+```
+>for i in *.sh;
+>do
+>sbatch $i
+>done
+```
