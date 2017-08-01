@@ -9,7 +9,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-  dockerPull: quay.io/shenglai/picard-sortvcf-tool:1.0a
+    dockerPull: quay.io/shenglai/picard-sortvcf-tool:1.0a
 
 inputs:
   - id: java_opts
