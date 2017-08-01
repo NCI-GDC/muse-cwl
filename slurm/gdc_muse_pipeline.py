@@ -179,7 +179,7 @@ def run_pipeline(args, statusclass, metricsclass):
       "exp_strat": args.exp_strat,
       "java_opts": '16G',
       "nthreads": 8,
-      "reference_dict": reference_fasta_dict
+      "reference_dict": {"class": "File", "path": reference_fasta_dict}
     }
     with open(sump_sort_json, 'wt') as o:
         json.dump(sump_sort_data, o, indent=4)
