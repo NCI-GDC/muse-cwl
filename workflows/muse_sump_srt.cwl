@@ -20,7 +20,7 @@ inputs:
   - id: java_opts
     type: string
   - id: nthreads
-    type: string
+    type: int
   - id: reference_dict
     type: File
 
