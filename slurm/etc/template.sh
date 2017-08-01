@@ -53,7 +53,7 @@ trap cleanup EXIT
 --basedir $basedir \
 --refdir $refdir \
 --cwl $basedir/muse-cwl/tools/muse_call.cwl \
---sort $basedir/muse-cwl/workflow/muse_sump_srt.cwl \
+--sort $basedir/muse-cwl/workflows/muse_sump_srt.cwl \
 --exp_strat $exp_strat \
 --s3dir $s3dir \
 --s3_profile $s3_profile \
