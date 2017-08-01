@@ -52,8 +52,8 @@ trap cleanup EXIT
 --n_s3_endpoint $n_s3_endpoint \
 --basedir $basedir \
 --refdir $refdir \
---cwl $basedir/muse-cwl/workflows/muse-workflow.cwl \
---sort $basedir/muse-cwl/tools/picard-sortvcf.cwl \
+--cwl $basedir/muse-cwl/tools/muse_call.cwl \
+--sort $basedir/muse-cwl/workflow/muse_sump_srt.cwl \
 --exp_strat $exp_strat \
 --s3dir $s3dir \
 --s3_profile $s3_profile \
