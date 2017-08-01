@@ -105,11 +105,11 @@ def run_pipeline(args, statusclass, metricsclass):
     logger.info("docker_version: {}".format(docker_version))
     # Download input
     normal_bam = os.path.join(inputdir, os.path.basename(args.normal_s3_url))
-    normal_download_cmd = utils.s3.aws_s3_get(logger, args.normal_s3_url, inputdir,
-                                             args.n_s3_profile, args.n_s3_endpoint, recursive=False)
+    normal_download_cmd = " ".join(utils.s3.aws_s3_get(logger, args.normal_s3_url, inputdir,
+                                             args.n_s3_profile, args.n_s3_endpoint, recursive=False))
     tumor_bam = os.path.join(inputdir, os.path.basename(args.tumor_s3_url))
-    tumor_download_cmd = utils.s3.aws_s3_get(logger, args.tumor_s3_url, inputdir,
-                                             args.t_s3_profile, args.t_s3_endpoint, recursive=False)
+    tumor_download_cmd = " ".join(utils.s3.aws_s3_get(logger, args.tumor_s3_url, inputdir,
+                                             args.t_s3_profile, args.t_s3_endpoint, recursive=False))
     download_cmd = [normal_download_cmd, tumor_download_cmd]
     download_exit = utils.pipeline.multi_commands(download_cmd, 2, logger)
     download_end_time = time.time()
@@ -129,8 +129,8 @@ def run_pipeline(args, statusclass, metricsclass):
     else:
         logger.info("Download successfully. Normal bam is %s, and tumor bam is %s." % (normal_bam, tumor_bam))
     # Build index
-    normal_bam_index_cmd = ['samtools', 'index', normal_bam]
-    tumor_bam_index_cmd = ['samtools', 'index', tumor_bam]
+    normal_bam_index_cmd = " ".join(['samtools', 'index', normal_bam])
+    tumor_bam_index_cmd = " ".join(['samtools', 'index', tumor_bam])
     index_cmd = [normal_bam_index_cmd, tumor_bam_index_cmd]
     index_exit = utils.pipeline.multi_commands(index_cmd, 2, logger)
     if any(x != 0 for x in index_exit):
