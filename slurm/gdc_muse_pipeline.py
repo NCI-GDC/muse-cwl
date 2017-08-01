@@ -105,21 +105,20 @@ def run_pipeline(args, statusclass, metricsclass):
     logger.info("docker_version: {}".format(docker_version))
     # Download input
     normal_bam = os.path.join(inputdir, os.path.basename(args.normal_s3_url))
-    normal_download_exit_code = utils.s3.aws_s3_get(logger, args.normal_s3_url, inputdir,
+    normal_download_cmd = utils.s3.aws_s3_get(logger, args.normal_s3_url, inputdir,
                                              args.n_s3_profile, args.n_s3_endpoint, recursive=False)
     tumor_bam = os.path.join(inputdir, os.path.basename(args.tumor_s3_url))
-    tumor_download_exit_code = utils.s3.aws_s3_get(logger, args.tumor_s3_url, inputdir,
+    tumor_download_cmd = utils.s3.aws_s3_get(logger, args.tumor_s3_url, inputdir,
                                              args.t_s3_profile, args.t_s3_endpoint, recursive=False)
+    download_cmd = [normal_download_cmd, tumor_download_cmd]
+    download_exit = utils.pipeline.multi_commands(download_cmd, 2, logger)
     download_end_time = time.time()
     download_time = download_end_time - cwl_start
-    if not (normal_download_exit_code != 0 or tumor_download_exit_code != 0):
-        logger.info("Download successfully. Normal bam is %s, and tumor bam is %s." % (normal_bam, tumor_bam))
-    else:
+    if any(x != 0 for x in download_exit):
         cwl_elapsed = download_time
         datetime_end = str(datetime.datetime.now())
         engine = postgres.utils.get_db_engine(postgres_config)
-        exit_code_list = [int(normal_download_exit_code), int(tumor_download_exit_code)]
-        download_exit_code = next((x for x in exit_code_list if x != 0), None)
+        download_exit_code = next((x for x in download_exit if x != 0), None)
         postgres.utils.set_download_error(download_exit_code, logger, engine,
                                           args.case_id, args.tumor_gdc_id, args.normal_gdc_id, output_id,
                                           datetime_start, datetime_end,
@@ -127,9 +126,20 @@ def run_pipeline(args, statusclass, metricsclass):
                                           download_time, cwl_elapsed, statusclass, metricsclass)
         # Exit
         sys.exit(download_exit_code)
+    else:
+        logger.info("Download successfully. Normal bam is %s, and tumor bam is %s." % (normal_bam, tumor_bam))
     # Build index
-    normal_bam_index = utils.pipeline.get_index(logger, inputdir, normal_bam)
-    tumor_bam_index = utils.pipeline.get_index(logger, inputdir, tumor_bam)
+    normal_bam_index_cmd = ['samtools', 'index', normal_bam]
+    tumor_bam_index_cmd = ['samtools', 'index', tumor_bam]
+    index_cmd = [normal_bam_index_cmd, tumor_bam_index_cmd]
+    index_exit = utils.pipeline.multi_commands(index_cmd, 2, logger)
+    if any(x != 0 for x in index_exit):
+        logger.info("Failed to build bam index.")
+        index_exit_code = next((x for x in index_exit if x != 0), None)
+        sys.exit(index_exit_code)
+    else:
+        normal_bam_index = utils.pipeline.get_index(logger, inputdir, normal_bam)
+        tumor_bam_index = utils.pipeline.get_index(logger, inputdir, tumor_bam)
     # Create input json
     input_json_list = []
     for i, block in enumerate(utils.pipeline.fai_chunk(reference_fasta_fai, args.block)):
@@ -139,31 +149,50 @@ def run_pipeline(args, statusclass, metricsclass):
           "normal_bam": {"class": "File", "path": normal_bam},
           "tumor_bam": {"class": "File", "path": tumor_bam},
           "region": "{0}:{1}-{2}".format(block[0], block[1], block[2]),
-          "prefix": '{}_{}_{}'.format(block[0], str(block[1]).replace('0000001', '0M1'), utils.pipeline.replace_last(str(block[2]), '000000', 'M', 1)),
-          "dbsnp": {"class": "File", "path": dbsnp},
-          "exp_strat": args.exp_strat
+          "output_base": '{}_{}_{}'.format(block[0], str(block[1]).replace('0000001', '0M1'), utils.pipeline.replace_last(str(block[2]), '000000', 'M', 1))
         }
         with open(input_json_file, 'wt') as o:
             json.dump(input_json_data, o, indent=4)
         input_json_list.append(input_json_file)
-    logger.info("Preparing input json")
+    logger.info("Prepared muse call json")
     # Run CWL
     os.chdir(workdir)
     logger.info('Running CWL workflow')
     cmds = list(utils.pipeline.cmd_template(inputdir = inputdir, workdir = workdir, cwl_path = args.cwl, input_json = input_json_list, output_id = output_id))
     cwl_exit = utils.pipeline.multi_commands(cmds, args.thread_count, logger)
+    call_output_list = glob.glob(os.path.join(workdir, '*.MuSE.txt'))
+    call_output_file = os.path.join(workdir, "{0}.MuSE.txt".format(str(output_id)))
+    first = True
+    with open(call_output_file, 'w') as ohandle:
+        for i in call_output_list:
+            with open(i) as handle:
+                for line in handle:
+                    if first or not line.startswith('#'):
+                        ohandle.write(line)
+            first = False
     # Create sort json
-    vcf_list = glob.glob(os.path.join(workdir, "*.MuSE.vcf"))
-    sort_json = utils.pipeline.create_sort_json(args.case_id, reference_fasta_dict, postgres_config, str(output_id), "MuSE", jsondir, workdir, vcf_list, logger)
+    sump_sort_json = os.path.join(jsondir, '{0}.muse_sump_srt.inputs.json'.format(str(output_id)))
+    sump_sort_data = {
+      "call_output": {"class": "File", "path": call_output_file},
+      "prefix": str(output_id),
+      "dbsnp": {"class": "File", "path": dbsnp},
+      "exp_strat": args.exp_strat,
+      "java_opts": '16G',
+      "nthreads": 8,
+      "reference_dict": reference_fasta_dict
+    }
+    with open(sump_sort_json, 'wt') as o:
+        json.dump(sump_sort_data, o, indent=4)
+    logger.info("Prepared muse sump and picard sort json")
     # Run Sort
-    srt_cmd = ['/home/ubuntu/.virtualenvs/p2/bin/cwltool',
+    sump_sort_cmd = ['/home/ubuntu/.virtualenvs/p2/bin/cwltool',
                "--debug",
                "--tmpdir-prefix", inputdir,
                "--tmp-outdir-prefix", workdir,
                args.sort,
-               sort_json]
-    srt_exit = utils.pipeline.run_command(srt_cmd, logger)
-    cwl_exit.append(srt_exit)
+               sump_sort_json]
+    sump_sort_exit = utils.pipeline.run_command(sump_sort_cmd, logger)
+    cwl_exit.append(sump_sort_exit)
     # Compress the outputs and CWL logs
     os.chdir(jobdir)
     output_vcf = "{0}.{1}.vcf.gz".format(str(output_id), "MuSE")

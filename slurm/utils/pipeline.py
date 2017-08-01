@@ -151,14 +151,8 @@ def get_index(logger, inputdir, input_bam):
     '''build input bam file index'''
     base, ext = os.path.splitext(os.path.basename(input_bam))
     bai_file = os.path.join(inputdir, base) + ".bai"
-    index_cmd = ['samtools', 'index', input_bam]
-    index_exit = run_command(index_cmd, logger)
-    if index_exit == 0:
-        logger.info("Build %s index successfully" % os.path.basename(input_bam))
-        os.rename(input_bam+".bai", bai_file)
-    else:
-        logger.info("Failed to build %s index" % os.path.basename(input_bam))
-        sys.exit(index_exit)
+    logger.info("Build %s index successfully" % os.path.basename(input_bam))
+    os.rename(input_bam+".bai", bai_file)
     return bai_file
 
 def load_reference_json():
@@ -183,22 +177,3 @@ def targz_compress(logger, filename, dirname, cmd_prefix=['tar', '-cjvf']):
 def replace_last(s, old, new, occurrence):
     li = s.rsplit(old, occurrence)
     return new.join(li)
-
-def create_sort_json(case_id, ref_dict, pg_config, jid, jtag, jdir, indir, inlist, logger):
-    path_list = []
-    sort_json_data = {
-        "host": "pgreadwrite.osdc.io",
-        "reference_fasta_dict": {"class": "File", "path": ref_dict},
-        "case_id": case_id,
-        "postgres_config": {"class": "File", "path": pg_config}
-    }
-    json_path = os.path.join(jdir, '{0}.picard_sort.{1}.inputs.json'.format(jid, jtag))
-    for vcf in inlist:
-        path = {"class": "File", "path": vcf}
-        path_list.append(path)
-    path_json = {"vcf_path": path_list, "output_vcf": "{0}.{1}.vcf.gz".format(jid, jtag)}
-    sort_json_data.update(path_json)
-    with open(json_path, 'wt') as o:
-        json.dump(sort_json_data, o, indent=4)
-    logger.info("Prepared picard sort {} input json".format(jtag))
-    return json_path
