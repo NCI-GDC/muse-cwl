@@ -40,7 +40,7 @@ if __name__ == "__main__":
     for case in cases:
         tumor_s3 = utils.s3.check_s3url(cases[case][3])
         normal_s3 = utils.s3.check_s3url(cases[case][4])
-        slurm = open(os.path.join(args.outdir, "muse.{}.sh".format(cases[case][0])), "w")
+        slurm = open(os.path.join(args.outdir, "muse.{}.{}.sh".format(cases[case][2], cases[case][1])), "w")
         template = os.path.join(os.path.dirname(os.path.realpath(__file__)),
         "etc/template.sh")
         temp = open(template, "r")
