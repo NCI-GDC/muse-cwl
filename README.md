@@ -1,23 +1,19 @@
-####1. Create slurm bash scripts.
+GDC MuSE (v1.0rc_submission_c039ffa) pipeline
+---
+Python Wrapper
 
 ```
-python /path/to/this/repo/branch/slurm/get_tn_pairs.py \
---config /path/to/your/GDC/postgres/config/file/ \
---outdir /path/to/desired/output/dir/
+/home/ubuntu/.virtualenvs/p2/bin/python slurm/gdc_muse_pipeline.py -h
 ```
 
-This code takes your GDC postgres credentials to get completed cocleaned tumor and normal pair information, and generate slurm bash script based on template.sh
-Please manually add your GDC postgres credentials in template.sh (e.g. "username" and "password") before running the python code.
-All reference files are pre-stated on all slurm workers.
+CWL
 
-####2. Put your slurm bash scripts into slurm cluster controller node.
-
-Please ask administrant to get ip address of controller node.
-
-####3. Make a for loop to run sbatch.
 ```
->for i in *.sh;
->do
->sbatch $i
->done
+/home/ubuntu/.virtualenvs/p2/bin/cwltool tools/muse_call.cwl -h
+/home/ubuntu/.virtualenvs/p2/bin/cwltool workflows/muse_sump_srt.cwl -h
 ```
+Note: The scattered outputs from muse_call would be merged in the wrapper and then pass to `workflows/muse_sump_srt.cwl`.
+
+Docker
+
+Dockerfiles for CWL tools could be found at `docker/`
