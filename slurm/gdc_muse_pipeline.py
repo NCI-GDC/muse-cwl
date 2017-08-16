@@ -158,7 +158,7 @@ def run_pipeline(args, statusclass, metricsclass):
     # Run CWL
     os.chdir(workdir)
     logger.info('Running CWL workflow')
-    cmds = list(utils.pipeline.cmd_template(inputdir = inputdir, workdir = workdir, cwl_path = args.cwl, input_json = input_json_list, output_id = output_id))
+    cmds = list(utils.pipeline.cmd_template(inputdir = inputdir, workdir = workdir, cwl_path = args.cwl, input_json = input_json_list))
     cwl_exit = utils.pipeline.multi_commands(cmds, args.thread_count, logger)
     call_output_list = glob.glob(os.path.join(workdir, '*.MuSE.txt'))
     call_output_file = os.path.join(workdir, "{0}.MuSE.txt".format(str(output_id)))
