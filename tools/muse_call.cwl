@@ -10,7 +10,7 @@ requirements:
     dockerPull: quay.io/ncigdc/muse-tool:2.0a
 
 inputs:
-  - id: ref
+  ref:
     type: File
     inputBinding:
       position: 2
@@ -19,36 +19,34 @@ inputs:
       - '.fai'
       - '^.dict'
 
-  - id: region
-    type: string
+  region:
+    type: File
     inputBinding:
       position: 3
-      prefix: -r
+      prefix: -l
 
-  - id: tumor_bam
+  tumor_bam:
     type: File
     inputBinding:
       position: 4
     secondaryFiles:
-      - '^.bai'
+      - '.bai'
 
-  - id: normal_bam
+  normal_bam:
     type: File
     inputBinding:
       position: 5
     secondaryFiles:
-      - '^.bai'
-
-  - id: output_base
-    type: string
-    inputBinding:
-      position: 6
-      prefix: -O
+      - '.bai'
 
 outputs:
-  - id: output_file
+  output_file:
     type: File
     outputBinding:
-      glob: $(inputs.output_base + '.MuSE.txt')
+      glob: $(inputs.region.nameroot + '.MuSE.txt')
 
 baseCommand: ['/home/ubuntu/tools/MuSEv1.0rc_submission_c039ffa', 'call']
+arguments:
+  - valueFrom: $(inputs.region.nameroot)
+    prefix: -O
+    position: 6

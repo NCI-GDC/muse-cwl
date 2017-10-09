@@ -12,7 +12,7 @@ requirements:
 
 inputs:
 
-  - id: dbsnp
+  dbsnp:
     type: File
     inputBinding:
       position: 2
@@ -20,13 +20,13 @@ inputs:
     secondaryFiles:
       - '.tbi'
 
-  - id: call_output
+  call_output:
     type: File
     inputBinding:
       position: 3
       prefix: -I
 
-  - id: exp_strat
+  exp_strat:
     type: string
     default: 'E'
     doc: E or G. E should be used for WXS and G for WGS.
@@ -35,14 +35,14 @@ inputs:
       prefix: '-'
       separate: False
 
-  - id: output_base
+  output_base:
     type: string
     inputBinding:
       position: 5
       prefix: -O
 
 outputs:
-  - id: output_file
+  MUSE_OUTPUT:
     type: File
     outputBinding:
       glob: $(inputs.output_base)
