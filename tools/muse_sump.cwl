@@ -43,7 +43,9 @@ inputs:
 
 outputs:
   MUSE_OUTPUT:
-    type: File
+    type:
+      type: array
+      items: File
     outputBinding:
       glob: $(inputs.output_base)
 
