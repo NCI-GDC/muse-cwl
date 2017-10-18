@@ -7,7 +7,8 @@ class: CommandLineTool
 requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
-
+  - class: ResourceRequirement
+  
 inputs:
   call_outputs:
     type:
