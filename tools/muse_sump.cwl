@@ -9,7 +9,6 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: quay.io/ncigdc/muse-tool:2.0a
-  - class: ResourceRequirement
   
 inputs:
 
