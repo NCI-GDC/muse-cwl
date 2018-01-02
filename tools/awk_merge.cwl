@@ -7,7 +7,9 @@ class: CommandLineTool
 requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
-  
+  - class: DockerRequirement
+    dockerPull: quay.io/shenglai/awk:1.0
+
 inputs:
   call_outputs:
     type:
