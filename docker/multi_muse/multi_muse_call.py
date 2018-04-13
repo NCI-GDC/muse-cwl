@@ -3,7 +3,6 @@
 
 import os
 import argparse
-import logging
 import subprocess
 import string
 from functools import partial
@@ -15,41 +14,23 @@ def is_nat(x):
         return int(x)
     raise argparse.ArgumentTypeError('%s must be positive, non-zero' % x)
 
-def setup_logging(level, log_name, log_filename):
-    '''Sets up a logger'''
-    logger = logging.getLogger(log_name)
-    logger.setLevel(level)
-    if log_filename is None:
-        shell_log = logging.StreamHandler()
-    else:
-        shell_log = logging.FileHandler(log_filename, mode='w')
-
-    shell_log.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s'))
-    logger.addHandler(shell_log)
-    return logger
-
-def do_pool_commands(cmd, logger, lock = Lock(), shell_var=True):
+def do_pool_commands(cmd, lock = Lock(), shell_var=True):
     '''run pool commands'''
-    logger.info('running: {}'.format(cmd))
     try:
         output = subprocess.Popen(cmd, shell=shell_var, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         output_stdout, output_stderr = output.communicate()
         with lock:
-            logger.info(cmd)
-            output_stdout = output_stdout.split("\n")
-            for line in output_stdout:
-                logger.info(line)
-            output_stderr = output_stderr.split("\n")
-            for line in output_stderr:
-                logger.info(line)
+            print('running: {}'.format(cmd))
+            print output_stdout
+            print output_stderr
     except Exception:
-        logger.exception("command failed {}".format(cmd))
+        print("command failed {}".format(cmd))
     return output.wait()
 
-def multi_commands(cmds, thread_count, logger, shell_var=True):
+def multi_commands(cmds, thread_count, shell_var=True):
     '''run commands on number of threads'''
     pool = Pool(int(thread_count))
-    output = pool.map(partial(do_pool_commands, logger=logger, shell_var=shell_var), cmds)
+    output = pool.map(partial(do_pool_commands, shell_var=shell_var), cmds)
     return output
 
 def get_region(intervals):
@@ -93,10 +74,8 @@ def main():
     tumor = args.tumor_bam
     normal = args.normal_bam
     threads = args.thread_count
-    log_file = "{}.{}.multi_muse.log".format(os.path.basename(tumor), os.path.basename(normal))
-    logger = setup_logging(logging.INFO, '{}.{}'.format(os.path.basename(tumor), os.path.basename(normal)), log_file)
     muse_cmds = list(cmd_template(ref=ref, region=get_region(interval), tumor=tumor, normal=normal))
-    outputs = multi_commands(muse_cmds, threads, logger)
+    outputs = multi_commands(muse_cmds, threads)
     first = True
     with open('multi_muse_call_merged.MuSE.txt', 'w') as oh:
         for cmd, out in muse_cmds:
@@ -106,9 +85,9 @@ def main():
                         oh.write(line)
             first = False
     if any(x != 0 for x in outputs):
-        logger.info('Failed multi_muse')
+        print('Failed multi_muse')
     else:
-        logger.info('Completed multi_muse')
+        print('Completed multi_muse')
 
 if __name__ == '__main__':
     main()
