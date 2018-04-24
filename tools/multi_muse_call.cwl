@@ -7,7 +7,7 @@ class: CommandLineTool
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/multi_muse_call:1.2
+    dockerPull: quay.io/ncigdc/multi_muse_call:1.3
 
 inputs:
   ref:
