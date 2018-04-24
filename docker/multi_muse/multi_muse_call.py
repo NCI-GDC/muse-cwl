@@ -76,18 +76,18 @@ def main():
     threads = args.thread_count
     muse_cmds = list(cmd_template(ref=ref, region=get_region(interval), tumor=tumor, normal=normal))
     outputs = multi_commands(muse_cmds, threads)
-    first = True
-    with open('multi_muse_call_merged.MuSE.txt', 'w') as oh:
-        for cmd, out in muse_cmds:
-            with open(out) as fh:
-                for line in fh:
-                    if first or not line.startswith('#'):
-                        oh.write(line)
-            first = False
     if any(x != 0 for x in outputs):
         print('Failed multi_muse')
     else:
         print('Completed multi_muse')
+        first = True
+        with open('multi_muse_call_merged.MuSE.txt', 'w') as oh:
+            for cmd, out in muse_cmds:
+                with open(out) as fh:
+                    for line in fh:
+                        if first or not line.startswith('#'):
+                            oh.write(line)
+                first = False
 
 if __name__ == '__main__':
     main()

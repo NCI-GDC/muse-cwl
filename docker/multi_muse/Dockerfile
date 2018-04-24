@@ -6,4 +6,4 @@ RUN apt-get update -y && \
 RUN cd /bin/ && wget http://bioinformatics.mdanderson.org/Software/MuSE/MuSEv1.0rc_submission_c039ffa && chmod +x MuSEv1.0rc_submission_c039ffa
 ADD multi_muse_call.py /bin/
 
-ENV multi_muse_call v1.2
+ENV multi_muse_call v1.3
