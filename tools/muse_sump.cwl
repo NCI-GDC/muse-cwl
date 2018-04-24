@@ -9,7 +9,7 @@ requirements:
   - class: ShellCommandRequirement
   - class: DockerRequirement
     dockerPull: quay.io/ncigdc/muse-tool:2.0a
-  
+
 inputs:
 
   dbsnp:
@@ -43,9 +43,7 @@ inputs:
 
 outputs:
   MUSE_OUTPUT:
-    type:
-      type: array
-      items: File
+    type: File
     outputBinding:
       glob: $(inputs.output_base)
 
