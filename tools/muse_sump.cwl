@@ -1,14 +1,13 @@
-#!/usr/bin/env cwl-runner
-
-cwlVersion: v1.0
-
 class: CommandLineTool
-
+cwlVersion: v1.0
+id: muse_sump
 requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/muse-tool:2.0a
+    dockerPull: quay.io/ncigdc/muse-tool:MuSEv1.0rc_submission_c039ffa
+doc: |
+  Run MuSE sump function.
 
 inputs:
 
@@ -47,4 +46,4 @@ outputs:
     outputBinding:
       glob: $(inputs.output_base)
 
-baseCommand: ['/home/ubuntu/tools/MuSEv1.0rc_submission_c039ffa', 'sump']
+baseCommand: ['/opt/MuSEv1.0rc_submission_c039ffa', 'sump']

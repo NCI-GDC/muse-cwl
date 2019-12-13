@@ -1,13 +1,12 @@
-#!/usr/bin/env cwl-runner
-
-cwlVersion: v1.0
-
 class: CommandLineTool
-
+cwlVersion: v1.0
+id: multi_muse_call
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/multi_muse_call:1.3
+    dockerPull: quay.io/ncigdc/multi_muse_call:1.4
+doc: |
+  Multithreading on MuSE call function.
 
 inputs:
   ref:
@@ -53,4 +52,4 @@ outputs:
     outputBinding:
       glob: 'multi_muse_call_merged.MuSE.txt'
 
-baseCommand: ['python', '/bin/multi_muse_call.py']
+baseCommand: ['python', '/opt/multi_muse_call.py']

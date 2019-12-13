@@ -1,14 +1,13 @@
-#!/usr/bin/env cwl-runner
-
-cwlVersion: v1.0
-
 class: CommandLineTool
-
+cwlVersion: v1.0
+id: muse_call
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/muse-tool:2.0a
-  
+    dockerPull: quay.io/ncigdc/muse-tool:MuSEv1.0rc_submission_c039ffa
+doc: |
+  Run MuSE call function.
+
 inputs:
   ref:
     type: File
@@ -45,7 +44,7 @@ outputs:
     outputBinding:
       glob: $(inputs.region.nameroot + '.MuSE.txt')
 
-baseCommand: ['/home/ubuntu/tools/MuSEv1.0rc_submission_c039ffa', 'call']
+baseCommand: ['/opt/MuSEv1.0rc_submission_c039ffa', 'call']
 arguments:
   - valueFrom: $(inputs.region.nameroot)
     prefix: -O
