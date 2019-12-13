@@ -1,36 +1,53 @@
-#!/usr/bin/env python
-'''Internal multithreading MuSE call'''
+'''
+Multithreading MuSE call
 
-import os
+@author: Shenglai Li
+'''
+
+import sys
+import time
+import logging
 import argparse
 import subprocess
 import string
 from functools import partial
-from multiprocessing.dummy import Pool, Lock
+from multiprocessing.dummy import Lock, Pool
 
-def is_nat(x):
-    '''Checks that a value is a natural number.'''
-    if int(x) > 0:
-        return int(x)
-    raise argparse.ArgumentTypeError('%s must be positive, non-zero' % x)
+def setup_logger():
+    '''
+    Sets up the logger.
+    '''
+    logger = logging.getLogger("multi_muse_call")
+    logger_format = '[%(levelname)s] [%(asctime)s] [%(name)s] - %(message)s'
+    logger.setLevel(level=logging.INFO)
+    handler = logging.StreamHandler(sys.stderr)
+    formatter = logging.Formatter(logger_format, datefmt='%Y%m%d %H:%M:%S')
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
 
-def do_pool_commands(cmd, lock = Lock(), shell_var=True):
+def do_pool_commands(cmd, logger, shell_var=True, lock=Lock()):
     '''run pool commands'''
     try:
-        output = subprocess.Popen(cmd, shell=shell_var, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output = subprocess.Popen(
+            cmd,
+            shell=shell_var,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
         output_stdout, output_stderr = output.communicate()
         with lock:
-            print('running: {}'.format(cmd))
-            print output_stdout
-            print output_stderr
-    except Exception:
-        print("command failed {}".format(cmd))
+            logger.info('MuSE Args: %s', cmd)
+            logger.info(output_stdout)
+            logger.info(output_stderr)
+    except BaseException:
+        logger.error("command failed %s", cmd)
     return output.wait()
 
-def multi_commands(cmds, thread_count, shell_var=True):
+def multi_commands(cmds, thread_count, logger, shell_var=True):
     '''run commands on number of threads'''
     pool = Pool(int(thread_count))
-    output = pool.map(partial(do_pool_commands, shell_var=shell_var), cmds)
+    output = pool.map(partial(do_pool_commands, logger=logger, shell_var=shell_var), cmds)
     return output
 
 def get_region(intervals):
@@ -46,7 +63,14 @@ def get_region(intervals):
 
 def cmd_template(ref=None, region=None, tumor=None, normal=None):
     '''cmd template'''
-    template = string.Template("/bin/MuSEv1.0rc_submission_c039ffa call -f ${REF} -r ${REGION} ${TUMOR} ${NORMAL} -O ${NUM}")
+    lst = [
+        '/opt/MuSEv1.0rc_submission_c039ffa',
+        'call',
+        '-f', '${REF}',
+        '-r', '${REGION}',
+        '${TUMOR}', '${NORMAL}', '-O', '${NUM}'
+    ]
+    template = string.Template(' '.join(lst))
     for i, interval in enumerate(region):
         cmd = template.substitute(
             dict(
@@ -59,30 +83,37 @@ def cmd_template(ref=None, region=None, tumor=None, normal=None):
         )
         yield cmd, '{}.MuSE.txt'.format(i)
 
-def main():
-    '''main'''
+def get_args():
+    '''
+    Loads the parser.
+    '''
+    # Main parser
     parser = argparse.ArgumentParser('Internal multithreading MuSE call.')
     # Required flags.
     parser.add_argument('-f', '--reference_path', required=True, help='Reference path.')
     parser.add_argument('-r', '--interval_bed_path', required=True, help='Interval bed file.')
     parser.add_argument('-t', '--tumor_bam', required=True, help='Tumor bam file.')
     parser.add_argument('-n', '--normal_bam', required=True, help='Normal bam file.')
-    parser.add_argument('-c', '--thread_count', type=is_nat, required=True, help='Number of thread.')
-    args = parser.parse_args()
+    parser.add_argument('-c', '--thread_count', type=int, required=True, help='Number of thread.')
+    return parser.parse_args()
+
+def main(args, logger):
+    '''main'''
+    logger.info("Running MuSE...")
     ref = args.reference_path
     interval = args.interval_bed_path
     tumor = args.tumor_bam
     normal = args.normal_bam
     threads = args.thread_count
     muse_cmds = list(cmd_template(ref=ref, region=get_region(interval), tumor=tumor, normal=normal))
-    outputs = multi_commands(muse_cmds, threads)
+    outputs = multi_commands([i[0] for i in muse_cmds], threads, logger)
     if any(x != 0 for x in outputs):
-        print('Failed multi_muse')
+        logger.error('Failed multi_muse_call')
     else:
-        print('Completed multi_muse')
+        logger.info('Completed multi_muse_call')
         first = True
         with open('multi_muse_call_merged.MuSE.txt', 'w') as oh:
-            for cmd, out in muse_cmds:
+            for _, out in muse_cmds:
                 with open(out) as fh:
                     for line in fh:
                         if first or not line.startswith('#'):
@@ -90,4 +121,19 @@ def main():
                 first = False
 
 if __name__ == '__main__':
-    main()
+    # CLI Entrypoint.
+    start = time.time()
+    logger_ = setup_logger()
+    logger_.info('-'*80)
+    logger_.info('multi_muse_call.py')
+    logger_.info('Program Args: %s', ' '.join(sys.argv))
+    logger_.info('-'*80)
+
+    args_ = get_args()
+
+    # Process
+    logger_.info('Processing tumor and normal bam files %s, %s', args_.tumor_bam, args_.normal_bam)
+    main(args_, logger_)
+
+    # Done
+    logger_.info('Finished, took %s seconds.', round(time.time() - start, 2))
