@@ -1,13 +1,12 @@
-#!/usr/bin/env cwl-runner
-
-cwlVersion: v1.0
-
 class: CommandLineTool
-
+cwlVersion: v1.0
+id: MergeMuSE
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/mergemuse:1.0
+    dockerPull: quay.io/ncigdc/mergemuse:1.1
+doc:
+  Merge MuSE call outputs, when not using `multi_muse_call.cwl`.
 
 inputs:
   call_outputs:
@@ -31,4 +30,4 @@ outputs:
     outputBinding:
       glob: $(inputs.merged_name)
 
-baseCommand: ['python', '/bin/MergeMuSE.py']
+baseCommand: ['python', '/opt/MergeMuSE.py']
