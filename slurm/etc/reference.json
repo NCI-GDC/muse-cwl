@@ -1,0 +1,9 @@
+{
+  "reference_fasta": "GRCh38.d1.vd1.fa",
+  "reference_fasta_index": "GRCh38.d1.vd1.fa.fai",
+  "reference_fasta_dict": "GRCh38.d1.vd1.dict",
+  "dbsnp": "dbsnp_144.hg38.vcf.gz",
+  "pg_config": "postgres_config",
+  "cwl_version": "1.0.20170718140316",
+  "docker_version": ["quay.io/ncigdc/muse-tool:2.0a", "quay.io/shenglai/picard-sortvcf-tool:1.0a"]
+}

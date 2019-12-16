@@ -1,13 +1,19 @@
-To submit a new workflow or tool description please make a pull request against this repository.
+GDC MuSE (v1.0rc_submission_c039ffa) pipeline
+---
+Python Wrapper
 
-###single cwl-tool usage:
-MuSE call usage:  cwl-runner /path/to/tools/muse_call.cwl.yaml --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --uuid uuid
+```
+/home/ubuntu/.virtualenvs/p2/bin/python slurm/gdc_muse_pipeline.py -h
+```
 
-MuSE sump wxs usage:  cwl-runner /path/to/tools/muse_sump_wxs.cwl.yaml --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp.bgz --uuid uuid  
+CWL
 
-MuSE sump wgs usage:  cwl-runner /path/to/tools/muse_sump_wgs.cwl.yaml --muse_call_output_path /path/to/muse_call/merged_output --dbsnp_known_snp_sites /path/to/dbsnp.bgz --uuid uuid
+```
+/home/ubuntu/.virtualenvs/p2/bin/cwltool tools/muse_call.cwl -h
+/home/ubuntu/.virtualenvs/p2/bin/cwltool workflows/muse_sump_srt.cwl -h
+```
+Note: The scattered outputs from muse_call would be merged in the wrapper and then pass to `workflows/muse_sump_srt.cwl`.
 
-###cwl-workflow usage:
-MuSE for WXS: cwl-runner --debug /path/to/muse-wxs-workflow.cwl.yaml --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --dbsnp_known_snp_sites /path/to/dbsnp.bgz --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --uuid uuid
+Docker
 
-MuSE for WGS: cwl-runner --debug /path/to/muse-wgs-workflow.cwl.yaml --tumor_bam_path /path/to/tumor.bam --normal_bam_path /path/to/normal.bam --reference_fasta_name /path/to/ref --reference_fasta_fai /path/to/ref.fai --dbsnp_known_snp_sites /path/to/dbsnp.bgz --Parallel_Block_Size number(default = 50000000) --thread_count number(default = 8) --uuid uuid
+Dockerfiles for CWL tools could be found at `docker/`
