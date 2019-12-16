@@ -1,12 +1,12 @@
 class: CommandLineTool
 cwlVersion: v1.0
-id: muse_call
+id: multi_muse_call
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/muse-tool:MuSEv1.0rc_submission_c039ffa
+    dockerPull: quay.io/ncigdc/multi_muse_call:1.4
 doc: |
-  Run MuSE call function.
+  Multithreading on MuSE call function.
 
 inputs:
   ref:
@@ -22,12 +22,13 @@ inputs:
     type: File
     inputBinding:
       position: 3
-      prefix: -l
+      prefix: -r
 
   tumor_bam:
     type: File
     inputBinding:
       position: 4
+      prefix: -t
     secondaryFiles:
       - '.bai'
 
@@ -35,17 +36,20 @@ inputs:
     type: File
     inputBinding:
       position: 5
+      prefix: -n
     secondaryFiles:
       - '.bai'
+
+  thread_count:
+    type: int
+    inputBinding:
+      position: 6
+      prefix: -c
 
 outputs:
   output_file:
     type: File
     outputBinding:
-      glob: $(inputs.region.nameroot + '.MuSE.txt')
+      glob: 'multi_muse_call_merged.MuSE.txt'
 
-baseCommand: ['/opt/MuSEv1.0rc_submission_c039ffa', 'call']
-arguments:
-  - valueFrom: $(inputs.region.nameroot)
-    prefix: -O
-    position: 6
+baseCommand: ['python', '/opt/multi_muse_call.py']

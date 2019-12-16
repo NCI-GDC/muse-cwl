@@ -1,19 +1,17 @@
-#!/usr/bin/env cwl-runner
-
-cwlVersion: v1.0
-
 class: CommandLineTool
-
+cwlVersion: v1.0
+id: muse_sump
 requirements:
-  - $import: envvar-global.cwl
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/muse-tool:2.0a
+    dockerPull: quay.io/ncigdc/muse-tool:MuSEv1.0rc_submission_c039ffa
+doc: |
+  Run MuSE sump function.
 
 inputs:
 
-  - id: dbsnp
+  dbsnp:
     type: File
     inputBinding:
       position: 2
@@ -21,13 +19,13 @@ inputs:
     secondaryFiles:
       - '.tbi'
 
-  - id: call_output
+  call_output:
     type: File
     inputBinding:
       position: 3
       prefix: -I
 
-  - id: exp_strat
+  exp_strat:
     type: string
     default: 'E'
     doc: E or G. E should be used for WXS and G for WGS.
@@ -36,16 +34,16 @@ inputs:
       prefix: '-'
       separate: False
 
-  - id: output_base
+  output_base:
     type: string
     inputBinding:
       position: 5
       prefix: -O
 
 outputs:
-  - id: output_file
+  MUSE_OUTPUT:
     type: File
     outputBinding:
       glob: $(inputs.output_base)
 
-baseCommand: ['/home/ubuntu/tools/MuSEv1.0rc_submission_c039ffa', 'sump']
+baseCommand: ['/opt/MuSEv1.0rc_submission_c039ffa', 'sump']
