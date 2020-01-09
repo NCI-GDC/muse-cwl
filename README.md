@@ -21,7 +21,7 @@ The CWL are tested under multiple `cwltools` environments. The most tested one i
 
 There is a production-ready GDC CWL workflow at https://github.com/NCI-GDC/gdc-somatic-variant-calling-workflow, which uses this repo as a git submodule.
 
-Please notice that you may want to change the docker image host of dockerPull: for each CWL.
+Please notice that you may want to change the docker image host of `dockerPull:` for each CWL.
 
 To use CWL directly from this repo, we recommend to run `tools/muse_call.cwl` + `tools/muse_sump.cwl` or `tools/multi_muse_call.cwl` + `tools/muse_sump.cwl`.
 
@@ -45,6 +45,8 @@ optional arguments:
   --ref REF
   --region REGION
   --tumor_bam TUMOR_BAM
+
+
 
 >>>>>>>>>>MuSE sump<<<<<<<<<<
 
