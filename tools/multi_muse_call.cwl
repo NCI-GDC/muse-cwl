@@ -4,7 +4,7 @@ id: multi_muse_call
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/multi_muse_call:1.4
+    dockerPull: quay.io/ncigdc/multi_muse_call:b4ccd414cfcd4669cb8d431a15de378fdec22724
 doc: |
   Multithreading on MuSE call function.
 
