@@ -6,7 +6,7 @@ docker-login:
 .PHONY: build build-*
 
 .PHONY: build build-*
-build: build-muse build-muse-merge build-multi-merge
+build: build-muse build-muse-merge build-multi-muse
 
 build-%:
 	@echo
@@ -15,13 +15,13 @@ build-%:
 
 .PHONY: publish publish-% publish-release publish-release-%
 
-publish: publish-muse publish-muse-merge publish-muilt-merge
+publish: publish-muse publish-muse-merge publish-muilt-muse
 
 publish-%:
 	@echo
 	@make -C $* publish
 
-publish-release: publish-release-muse publish-release-muse-merge publish-release-muilt-merge
+publish-release: publish-release-muse publish-release-muse-merge publish-release-muilt-muse
 
 publish-release-%:
 	@echo
