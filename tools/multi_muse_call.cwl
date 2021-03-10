@@ -4,7 +4,7 @@ id: multi_muse_call
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/multi_muse_call:a128a43c982feae91d513ac902a2c6592b2ed0fa
+    dockerPull: quay.io/ncigdc/muse-tool:1.0.0
 doc: |
   Multithreading on MuSE call function.
 
@@ -52,4 +52,4 @@ outputs:
     outputBinding:
       glob: 'multi_muse_call_merged.MuSE.txt'
 
-baseCommand: ['python3.7', '/opt/multi_muse_call_p3.py']
+baseCommand: ['muse_tool', 'multi']
