@@ -4,7 +4,7 @@ id: multi_muse_call
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/muse-tool:1.0.0-442.fc8661f
+    dockerPull: quay.io/ncigdc/muse-tool:1.0.0-444.bd5645e
 doc: |
   Multithreading on MuSE call function.
 
@@ -45,6 +45,12 @@ inputs:
     inputBinding:
       position: 6
       prefix: -c
+
+  timeout:
+    type: int?
+    inputBinding:
+      position: 7
+      prefix: --timeout
 
 outputs:
   output_file:
