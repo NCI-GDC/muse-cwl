@@ -4,7 +4,7 @@ id: muse_call
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/muse-tool:MuSEv1.0rc_submission_c039ffa
+    dockerPull: docker.osdc.io/ncigdc/muse-tool:1.0.0-444.bd5645e
 doc: |
   Run MuSE call function.
 
@@ -44,7 +44,7 @@ outputs:
     outputBinding:
       glob: $(inputs.region.nameroot + '.MuSE.txt')
 
-baseCommand: ['/opt/MuSEv1.0rc_submission_c039ffa', 'call']
+baseCommand: ['/usr/local/bin/muse', 'call']
 arguments:
   - valueFrom: $(inputs.region.nameroot)
     prefix: -O
