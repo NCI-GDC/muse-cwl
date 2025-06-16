@@ -5,7 +5,7 @@ requirements:
   - class: InlineJavascriptRequirement
   - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: quay.io/ncigdc/muse-tool:MuSEv1.0rc_submission_c039ffa
+    dockerPull: docker.osdc.io/ncigdc/muse-tool:1.0.0-444.bd5645e
 doc: |
   Run MuSE sump function.
 
@@ -46,4 +46,4 @@ outputs:
     outputBinding:
       glob: $(inputs.output_base)
 
-baseCommand: ['/opt/MuSEv1.0rc_submission_c039ffa', 'sump']
+baseCommand: ['/usr/local/bin/muse', 'sump']
