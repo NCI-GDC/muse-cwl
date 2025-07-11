@@ -3,9 +3,8 @@ cwlVersion: v1.0
 id: muse_sump
 requirements:
   - class: InlineJavascriptRequirement
-  - class: ShellCommandRequirement
   - class: DockerRequirement
-    dockerPull: docker.osdc.io/ncigdc/muse-tool:1.0.0-444.bd5645e
+    dockerPull: docker.osdc.io/ncigdc/muse:1.0-d8fe1e6
 doc: |
   Run MuSE sump function.
 
@@ -46,4 +45,4 @@ outputs:
     outputBinding:
       glob: $(inputs.output_base)
 
-baseCommand: ['/usr/local/bin/muse', 'sump']
+baseCommand: ['/muse/muse_v1.0', 'sump']
