@@ -4,7 +4,7 @@ id: muse_sump
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: docker.osdc.io/ncigdc/muse:1.0-d8fe1e6
+    dockerPull: docker.osdc.io/ncigdc/muse:1.0-c736b48
 doc: |
   Run MuSE sump function.
 
