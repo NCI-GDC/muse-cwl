@@ -4,7 +4,7 @@ id: muse_call
 requirements:
   - class: InlineJavascriptRequirement
   - class: DockerRequirement
-    dockerPull: docker.osdc.io/ncigdc/muse:1.0-c736b48
+    dockerPull: docker.osdc.io/ncigdc/muse:1.0-96322a3
 doc: |
   Run MuSE call function.
 
